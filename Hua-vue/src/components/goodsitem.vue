@@ -1,0 +1,157 @@
+<template>
+    <Col class="card_float  goodSmall_common_style" span="6" >
+        <div class="goodSmall_img">
+            <img v-lazy="item.goodsImg"  @click="toGoodsDetail(item.goodsID)" style="width:100%;border-radius:5px;height:100%;" :key="item.goodsID" alt="">
+        </div>
+        <div class="goodSmall_content" >
+            <div class="goodSmallPrice">
+                <p class="item_goods_title">{{item.goodsName}}</p>
+                <p class="item_goods_des">{{item.goodsDesc}}</p>
+                <strong  class="item_goods_price">{{item.minPrice}}￥</strong>
+            </div>           
+            <div class="goodSmallButton_box">
+                <div class="ybutton">
+                    <Button  @click="toGoodsDetail(item.goodsID)">查看详情</Button>
+                    <Button type="primary" @click="addCart(item.goodsID,item.minPrice,item.goodsName,item.goodsImg )">加入购物车</Button>
+                </div>
+            </div>
+
+        </div>   
+    </Col>
+</template>
+<script>
+import { mapMutations, mapState } from 'vuex'
+export default {
+    data(){
+        return {
+            
+        }
+    },
+    props:{
+        item:'',
+    },
+    computed:{
+        ...mapState(['cartList'])
+    },
+    methods:{
+        ...mapMutations(['ADD_CART']),
+        toGoodsDetail(goodsID){
+            window.open('//'+window.location.host +'/#/good/goodsdetali?goodsID=' + goodsID)
+        },
+        addCart(goodsID,goodsPrice, goodsName, goodsImg){
+            
+            this.ADD_CART({goodsID,goodsPrice, goodsName, goodsImg ,goodsNum:1 })
+        }
+    },
+    mounted(){
+    }
+}
+</script>
+<style>
+/* 小的商品 */
+.goodSmall_common_style{
+    padding: 20px 20px;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-around */
+}
+.goodSmall_common_style img{
+    width:195px !important;
+    height: 217px !important;
+    transition: all 0.3s ease-in-out;
+}
+
+.goodSmall_content{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.goodSmallPrice{
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    margin-bottom: 30px
+}
+.goodSmallPrice .item_goods_title{
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+}
+.goodSmallPrice .item_goods_price{
+    font-size: 16px;
+    color: #ed4014
+}
+.goodSmallPrice .item_goods_des{
+    font-size: 13px;
+    margin: 0 0 15px;
+    color: #c5c8ce;
+    text-align: justify;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+}
+.goodSmallButton_box{
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+}
+.goodSmallButton_box .ybutton{
+    flex: 1;
+    /* display: none; */
+    display: flex;
+    justify-content: space-between
+}
+/* .goodSmall_common_style:hover .goodSmallPrice{
+    display: none;
+} */
+.goodSmall_common_style:hover .goodSmallButton_box{
+    display: flex;
+
+}
+.goodSmall_common_style img:hover {
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    transform: scale(1.3);
+    
+
+}
+
+/* 悬浮 */
+.card_float{
+    position: relative;
+    border:1px solid #fff;
+    transition:all 0.5s;
+    height:450px;
+    background-color: #fff;
+}
+.card_float:hover{
+    border:1px solid #dcdee2;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,.1);
+    z-index: 10;
+}
+/* 按钮 */
+.goodSmallButton_box{
+    margin-bottom: 30px;
+    height: 93px;
+    
+    justify-self: flex-end
+}
+.ybutton>button{
+    flex: 1
+}
+.ybutton>button:nth-child(1){
+    margin-right: 20px;
+}
+/* 图片 */
+.goodSmall_img {
+    padding: 5px 30px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+</style>
+
+

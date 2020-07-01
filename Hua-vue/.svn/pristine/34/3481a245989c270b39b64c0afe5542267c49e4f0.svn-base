@@ -1,0 +1,9 @@
+
+import request from '@/uilts/request.js'
+export function createOd(data){
+    return request({
+        url:'/hua/order/create',
+        method:'post',
+        data:data
+    })
+}

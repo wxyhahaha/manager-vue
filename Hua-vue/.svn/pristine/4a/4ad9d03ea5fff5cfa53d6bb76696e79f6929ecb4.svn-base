@@ -1,0 +1,418 @@
+<template>
+    <div class="header">
+        <header>
+            <nav class="nav">
+                <div class="nav_left">
+                    <span class="login_logo" @click="tohome">
+                        <i>Hua</i>
+                    </span>
+                </div>
+                <div class="nav_right">
+                    <div class="searchBox">
+                        <Input search size="large" @on-focus="searchInput" placeholder="输入想要的鲜花..." />
+                    </div>                    
+                    <div class="nav_moreInfo">
+                        <a href="" class="a_allGoods">全部商品</a>
+                        <span class="spread"></span>
+                        <Icon class="md-person" type="md-person" size="25" color='#808695'/>
+                        <div class="cartBox">
+                            <Icon class="md-cart" type="md-cart" size="25" color='#808695'/>
+                            <div class="small_car_circle">
+                                {{totalNum}}
+                            <div :class="cart_style">
+                                <div v-if="cartList.length  == 0">
+                                    购物车竟然是空的
+                                </div>
+                                    <ul>
+                                        <li v-for="item in cartList " :key="item.goodsID" @click="toDetail(item.goodsID)">
+                                            <div class="cart_content_left">
+                                                <img :src="item.goodsImg" alt="">
+                                            </div> 
+                                            <div class="cart_content_right">
+                                                    <h4>{{item.goodsName}}</h4>
+                                                    <div>
+                                                        <span class="cart_good_price">￥{{item.goodsPrice}}</span>
+                                                        <span class="cart_good_num">x{{item.goodsNum}}</span>
+                                                    </div>                                
+                                            </div>
+                                            <Icon type="md-close-circle"  class="delcart" size="20" @click.stop="delGood(item.goodsID)"/>
+                                        </li>
+                                    </ul>
+                                    <div class="cart_Box_bottom" v-if="cartList.length  != 0">
+                                        <div>
+                                            <span>共{{totalNum}}个商品</span>
+                                            <span>共计:<span class="cart_bottom_price">{{totalPrice.toFixed(2)}}￥</span></span>
+                                        </div>
+                                        <div>
+                                            <Button type="primary" @click="toCart">去购物车</Button>
+                                        </div>
+                                    </div>
+                            </div>                                 
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+           
+            </nav>
+        </header>
+        <div class="nav2">
+            <div class="nav2_wrapper">
+                <ul>
+                    <li><a @click.prevent="tohome">首页</a></li>
+                    <li><a href="javascipt:;" @click.prevent="togoods">全部</a></li>
+                    <li><a href="javascipt:;" @click.prevent="togoods">鲜花</a></li>
+                    <li><a href="javascipt:;" @click.prevent="togoods">永生花</a></li>
+                    <li><a href="javascipt:;" @click.prevent="togoods">礼品</a></li>
+                    <li><a href="javascipt:;" @click.prevent="togoods">花语大全</a></li>     
+                </ul>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+import { mapState, mapMutations } from 'vuex'
+import { getLocalStorage } from '@/uilts/storage'
+export default {
+    data(){
+        return{
+
+        }
+    },
+    computed:{
+        ...mapState(['loginStatus','cartList']),
+        totalPrice(){
+            let totalPrice = 0
+            this.cartList && this.cartList.forEach(el=>{
+                totalPrice +=( el.goodsNum * el.goodsPrice )
+            })
+            return totalPrice
+        },
+        totalNum(){
+            let totalNum = 0
+            this.cartList && this.cartList.forEach(el=>{
+                totalNum += el.goodsNum
+            })
+            return totalNum            
+        },
+        cart_style(){
+            if(this.cartList.length == 0) return  {'cart_content_Box':true,'cart_minheight':true }
+            else{  return  {'cart_content_Box':true,'cart_minheight':false }  }
+        }
+    },
+    mounted(){
+        
+        this.INIT_CART('cartList')
+
+    },
+    methods:{
+        ...mapMutations(['INIT_CART','DEL_CART']),
+        delGood(goodsID){
+            this.DEL_CART(goodsID)
+        },
+        toDetail(goodsID){
+            
+             window.open('//'+window.location.host +'/#/good/goodsdetali?goodsID=' + goodsID)
+        },
+        toCart(){
+            this.$router.push('/cartlist')
+        },
+        tohome(){
+            this.$router.push('/')
+        },
+        togoods(){
+            this.$router.push('/good')
+        },
+        searchInput(){
+            this.$Notice.info({
+                title:'温馨提醒',
+                desc:'这个功能还没做哦~,这个没问题的，相信我'
+            })
+        },
+        tip(){
+             this.$Notice.info({
+                title:'温馨提醒',
+                desc:'这个功能也还没做哦~,这个没问题的，相信我'
+            })           
+        }
+    }
+}
+</script>
+<style>
+header{
+    /* margin-bottom: 20px; */
+    width: 100%;
+    background: #1a1a1a;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+
+}
+.header{
+    margin: 0 auto 20px;
+    min-width: 1200px;
+    width: 100%;
+}
+.nav{
+    width: 1200px;
+    height: 96px;
+    
+    
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+.nav>div{
+    display: flex;
+    color:#f8f8f9;
+}
+.searchBox{
+    width: 350px;
+    margin-right: 50px;
+}
+.nav_moreInfo{
+    display: flex;
+    align-items: center;
+    color: #515a6e
+}
+.nav_moreInfo a{
+    color: #808695
+}
+.cartBox{
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.cartBox:hover .cart_content_Box{
+    display: flex
+}
+
+
+.cart_content_Box{
+    width: 300px;
+    position: absolute;
+    top: 10px;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    box-shadow: 0 10px 14px rgba(0,0,0,.1);
+    border-radius: 10px;
+    color: #808695;
+    z-index: 999;
+}
+.cart_minheight{
+    height: 300px;
+}
+.cart_content_Box ul{
+    width: 100%;
+}
+.cart_content_Box li{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    /* height: 90px; */
+    padding: 20px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #dcdee2;
+    position: relative;
+}
+.cart_content_Box li:first-child{
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.cart_content_Box li:hover{
+    background-color: #f8f8f9
+}
+.cart_content_Box li:hover .delcart{
+     display: block
+}
+.delcart{
+    position: absolute;
+    display: none;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%)
+}
+.delcart:hover{
+    opacity: 0.8;
+}
+.cart_content_Box li:last-child{
+    border: none
+}
+.cart_content_Box .cart_content_left{
+    display: flex;
+    align-items: center;
+    width: 28%
+}
+.cart_content_right{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 72%;
+    height: 100%;
+    padding: 10px 0 10px 15px;
+}
+.cart_content_right h4{
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 10px;
+    overflow: hidden;/*超出部分隐藏*/
+    white-space: nowrap;/*不换行*/
+    text-overflow:ellipsis;/*超出部分文字以...显示*/    
+}
+.cart_good_price{
+    color:rgb(207,1,12);
+    font-size: 15px;
+    margin-right: 5px;
+    
+}
+.cart_good_num{
+    font-size: 12px;
+    color: #c5c8ce;
+}
+.cart_content_Box img{
+    width: 70px;
+    height: 70px;
+}
+.cart_Box_bottom{
+    width:100%;
+    height: 60px;
+    padding: 10px;  
+    background-color: #f8f8f9;
+    box-shadow: 0 -2px 5px rgba(0,0,0,.1);
+    border: 1px solid #dcdee2;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    display: flex;
+    justify-content: space-between
+}
+.cart_Box_bottom>div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 14px;
+
+}
+.cart_Box_bottom>div>span{
+    font-size: 12px;
+}
+.cart_bottom_price{
+    font-size: 14px;
+    color: rgb(207,1,12);
+}
+
+
+.a_allGoods{
+    font-size: 16px;
+    margin-right: 50px;
+}
+.spread{
+    display: block;
+    width: 1px;
+    height: 20px;
+    margin-right: 50px;
+    background-color: #515a6e;
+
+}
+.md-person{
+    
+    margin-right: 30px;
+}
+.md-cart{
+    margin-right: 5px; 
+}
+.small_car_circle{
+    width: 21px;
+    height: 21px;
+    font-size: 14px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background-color: #eb746b;
+
+    color: #fff;
+}
+.nav2{
+    width: 100%;
+    height: 80px;
+    background-color: #f7f7f7;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+    padding: 0 20px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+.nav2_wrapper{
+    width: 1200px;
+    height: 88px;
+    display: flex;
+    align-items: center;
+}
+.nav2_wrapper ul{
+    display: flex;
+    width: 1400px;
+    margin: 0 auto;
+}
+.nav2_wrapper ul li{
+    width: 100px;   
+    position:relative; 
+}
+.nav2_wrapper ul li:first-child{
+    margin-left: 30px;
+}
+.nav2_wrapper ul li a{
+    color: #515a6e;
+    font-size: 15px;
+    font-weight: 500
+}
+.nav2_wrapper ul li::before{
+    content: "";
+    position:absolute;
+    width: 3px;
+    height: 3px;
+    background-color: #808695;
+    top: 50%;
+    left: -25px;
+    transform: translateY(-50%) ;
+}
+
+.login_logo{
+    display: flex;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0,0,0,.3);
+    background:linear-gradient(rgba(255,105,180,0.6),rgba(255,255,255,1)) ;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+box-shadow: 0 0 20px rgba(255,255,255,.4);
+    cursor: pointer;
+}
+.login_logo:hover{
+    background-color: azure
+}
+.login_logo i{
+    font-family: STHupo;
+    font-style: normal;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    opacity: 0.3;
+    font-weight: 800;
+    font-size: 24px;
+    color: rgba(199,21,133,1);
+    transform: translateX(-50%) translateY(-50%)
+}
+</style>

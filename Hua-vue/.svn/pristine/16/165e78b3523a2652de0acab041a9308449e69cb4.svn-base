@@ -1,0 +1,32 @@
+<template>
+  <div id="app">
+    <router-view ></router-view>
+  </div>
+</template>
+
+<script>
+
+export default {
+  name: 'app',
+  components:{
+  },
+  data () {
+  },
+  mounted(){
+    this.get();
+  },
+  methods:{
+    get(){
+      this.$ajax.get('http://47.100.57.39:7001/index').then(res=>{
+        console.log(res)
+      })
+    }
+  }
+}
+</script>
+
+<style>
+body{
+  background-color: #ededed
+}
+</style>

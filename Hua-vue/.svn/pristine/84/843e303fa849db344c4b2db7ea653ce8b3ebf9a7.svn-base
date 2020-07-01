@@ -1,0 +1,224 @@
+<template>
+    <div class="goodsDetail_Box" v-cloak>
+        <Row class="goodsDetail_content" type="flex" v-if="!goodsNull">
+            <Col span="12" class="goodsDetail_left" >
+                <div class="pic_box">
+                    <ul class="smallpicUl">
+                        <li v-for="pic in smallPics"><a href="javascript:;"><img :src="pic" alt=""></a></li>
+                    </ul>
+                    <div class="bigpicBox">
+                        <img v-lazy="goodsInfo.goodsImg"  alt="">
+                    </div>
+                </div>
+            </Col>    
+            <Col span="12" class="goodsDetail_right">
+                <h3>{{goodsInfo.goodsName}}</h3>
+                <div class="descAndPrice">
+                    <p>{{goodsInfo.goodsDesc}}</p>
+                    <strong>￥{{goodsInfo.minPrice}}</strong>
+                </div>
+
+                <div class="numinput_Box">
+                        <label for="">数量 ：</label>
+                        <InputNumber :max="10" :min="1" v-model="goodsNum"></InputNumber>   
+
+                </div>
+                <div class="countMoney_Box">
+                    <span>总计:￥{{totalMoney.toFixed(2)}}</span>
+                    <Button type="error" @click="createOrder">现在购买</Button>
+                </div>
+            </Col>  
+        </Row>
+        <Row class="goodsDetail_content" type="flex" v-else>
+             <div class="goodsNull_Box">
+                 商品不存在
+             </div>
+        </Row>
+    </div>
+</template>
+<script>
+import { getData } from '@/api/good'
+export default {
+    data(){
+     return {
+         searchData:{
+             goodsID:undefined,
+             page:1,
+             pageSize:10
+         },
+         totalMoney:undefined,
+         goodsInfo:{
+             goodsID:undefined,
+             goodsImg:undefined,
+             goodsName:undefined,
+             goodsDesc:undefined,
+             minPrice:undefined
+         },
+         goodsNull:false,
+         totalMoney:0,
+         goodsNum:1,
+         smallPics:[],
+
+     }
+    },
+    computed:{
+    },
+    mounted(){
+        this.searchData.goodsID = parseInt(this.$route.query.goodsID)
+        console.log(this.searchData)
+        this.getAssignGoods()
+
+    },
+    methods:{
+        getAssignGoods(){
+            getData(this.searchData).then(res=>{
+                console.log(res)
+                if(res.data.code == 0){
+                    this.goodsInfo = res.data.data.data[0]
+                    this.totalMoney = res.data.data.data[0].minPrice
+                    this.smallPics = JSON.parse(res.data.data.data[0].goodsPics) 
+                   
+                }
+                else{
+                    this.goodsNull = true
+                }
+            })
+        },
+        createOrder(){
+            let goodsID = this.goodsInfo.goodsID
+            let goodsNum = this.goodsNum
+            let goodsPrice = this.goodsInfo.minPrice
+            let goodsName = this.goodsInfo.goodsName
+            let goodsImg = this.goodsInfo.goodsImg
+            let goodsInfo = JSON.stringify({ goodsID, goodsNum, goodsPrice, goodsName, goodsImg })
+            this.$router.push({path:`/order`,query:{ goodsInfo }})
+            
+            return
+         
+        },
+    },
+    watch:{
+        goodsNum(){
+             this.totalMoney = this.goodsInfo.minPrice * this.goodsNum
+        }
+    }
+}
+</script>
+<style>
+.goodsDetail_Box{
+    width: 1200px;
+    margin: 20px auto;
+    height: auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+}
+.goodsDetail_content{
+padding: 50px;
+    height:500px;
+}
+.goodsDetail_left{
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+}
+.pic_box{
+    width: 80%;
+    display: flex;
+    
+}
+.smallpicUl{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+
+}
+.smallpicUl li{
+width: 80px;
+    height: 80px;
+    border-radius: 5px;
+    border: 1px solid #e8eaec
+}
+.smallpicUl{
+    transition: all 0.2s
+}
+.smallpicUl li:hover {
+    border: 2px solid #2db7f5
+}
+
+.smallpicUl img{
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    
+}
+.bigpicBox{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-left: 20px;
+}
+.bigpicBox img{
+width: 100%;
+height: 400px;
+}
+.goodsDetail_right{
+    display: flex;
+    flex-direction: column;
+    
+}
+.goodsDetail_right strong{
+    font-size: 24px;
+    color: rgb(218,18,12);
+}
+.goodsDetail_right h3{
+    height: 30%;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.goodsDetail_right .descAndPrice{
+    height: 23%;
+    padding: 10px 0;
+    border-top: 1px solid #dcdee2;
+    border-bottom: 1px solid #dcdee2
+}
+.descAndPrice p {
+    width: 50%;
+    letter-spacing: 1px;
+}
+.descAndPrice strong {
+    display: flex;
+    justify-content: flex-end;
+}
+.goodsDetail_right .numinput_Box{
+    height: 17%;
+    display: flex;
+    align-items: center;
+}
+.goodsDetail_right .countMoney_Box{
+    height: 30%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.countMoney_Box{
+    font-size: 18px;
+    color: rgb(207,1,12);
+    font-weight: 700;
+}
+.goodsNull_Box{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: #c5c8ce;
+    
+}
+[v-cloak] {
+    display: none;
+}
+</style>

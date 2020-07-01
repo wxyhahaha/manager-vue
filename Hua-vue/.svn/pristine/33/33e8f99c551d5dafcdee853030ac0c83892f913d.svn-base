@@ -1,0 +1,154 @@
+<template>
+    <div>
+        <section class="section">
+            <div class="banner">
+                <div></div>
+            </div>
+            <div class="zhangshiBox">
+
+                <div class="innerBoxShadow"></div>
+                <div class="innerBoxShadow"></div>
+                <div class="innerBoxShadow"></div>
+                <div class="innerBoxShadow"></div>
+            </div>
+            <div class="common_f_Box hot_f">
+                <y-shlef :title="title1">
+                   <div slot="content" class="good_content">
+                        <Col class="card_float" span="12"></Col>
+                        <Col class="card_float" span="12"></Col>
+                    </div> 
+                </y-shlef>
+                <!-- <div class="commonBox_header">
+                    <h2>热门鲜花</h2>
+                </div>
+                <Row class="commonBox_content">
+                    <Col class="card_float" span="12"></Col>
+                    <Col class="card_float" span="12"></Col>
+                </Row>                -->
+            </div>
+            <div class="common_f_Box jingxuan_f">
+                <div class="commonBox_header">
+                    <h2>官方精选</h2>
+                </div>
+                    <Row class="commonBox_content">
+                        <Col class="innerBoxShadow" span="12"></Col>
+                        <Col class="card_float" span="6"></Col>
+                        <Col class="card_float" span="6"></Col>            
+                        <Col span="6" class="card_float"></Col>
+                        <Col span="6" class="card_float"></Col>
+                        <Col span="6" class="card_float"></Col>
+                        <Col span="6" class="card_float"></Col>
+                    </Row>            
+            </div>
+            
+        </section>
+    </div>
+</template>
+<script>
+import Yshelf from '../../components/shelf'
+
+export default {
+    data(){
+        return{
+            title1:'热销鲜花',
+            title2:'官方精选'
+        }
+    },
+    components:{
+        'y-shlef':Yshelf
+    },
+    mounted(){
+        this.get()
+    },
+    methods:{
+        get(){
+       
+        this.$axois.post('http://localhost:7001/hua/good/list',{page:1,pageSize:10}).then(res=>{
+            console.log(res)
+        })
+        }
+    }
+}
+</script>
+<style>
+.section{
+    width: 1400px;
+    padding: 20px 20px;
+    margin: 0 auto;
+    /* margin-bottom: 20px; */
+}
+.banner{
+    width: 100%;
+    height: 550px;
+    margin: 20px 0;
+}
+.banner>div{
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+}
+.banner>div:nth-child(1){
+    background-color: brown
+}
+.zhangshiBox{
+    display: flex;
+    width: 100%;
+    height: 200px;
+    margin-bottom: 20px;
+}
+.zhangshiBox>div{
+    flex:1;
+    background-color: #ffffff;
+    border-radius: 4px;
+    border: 1px solid  #dcdee2;
+}
+.commonBox_header{
+    width: 100%;
+    height: 56px;
+    background:  linear-gradient(#f7f7f7,#fbfbfb);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    color: #17233d;
+    position: relative;
+    z-index: 11;
+    
+}
+.common_f_Box{
+    margin-bottom: 20px;
+    border:1px solid #dcdee2
+}
+.commonBox_content{
+    display: flex;
+    flex-wrap: wrap
+}
+.commonBox_content>div{
+    /* flex: 1; */
+    
+    background-color: #fff;
+}
+.good_content{
+    width: 100%
+}
+/* .jingxuan_f .commonBox_content>div{
+    height:450px;
+} */
+
+.card_float{
+    position: relative;
+    border:1px solid #fff;
+    transition:all 0.5s;
+    height:450px;
+    background-color: #fff;
+}
+.card_float:hover{
+    border:1px solid #dcdee2;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,.1);
+    z-index: 10;
+}
+</style>
+
+

@@ -1,0 +1,301 @@
+<template>
+    <div>
+        <section class="section">
+            <div class="banner">
+                <div></div>
+            </div>
+            <div class="zhangshiBox">
+
+                <div class="innerBoxShadow"></div>
+                <div class="innerBoxShadow"></div>
+                <div class="innerBoxShadow"></div>
+                <div class="innerBoxShadow"></div>
+            </div>
+            <div class="common_f_Box hot_f">
+                <y-shlef :title="title1">
+                   <div slot="content" class="good_content">
+                        <Col class="card_float goodMax_common_style" span="12" style="" v-for="item in goodMax">
+                            <Col span="13" class="goodMax_img">
+                                <img :src="item.goodsImg" style="width:100%" alt="">
+                                <strong style="margin-top:20px; font-size:20px" >{{item.minPrice}}￥</strong>         
+                            </Col>                            
+                            <Col span="10"  class="goodMax_content">
+                                <div>
+                                    <h3 class="goodMax_title">商品名称:{{item.goodsName}}</h3>
+                                     <p class="goodMax_p">商品描述:{{item.goodsDesc}}</p>                                                   
+                                </div>
+                                <div class="goodMaxButton_box">
+                                    <div class="ybutton">
+                                        <Button @click="toGoodsDetail(item.goodsID)">查看详情</Button>
+                                        <Button @click="addCart(item.goodsID,item.minPrice,item.goodsName,item.goodsImg )">加入购物车</Button>
+                                    </div>
+                                </div>
+                            </Col>
+                        </Col>
+                    </div> 
+                </y-shlef>
+            </div>
+            <div class="common_f_Box jingxuan_f">
+                <y-shlef :title="title2">
+                   <div slot="content" class="good_content">
+                        <Col class="innerBoxShadow goodMax_common_style" span="12" style="">
+                            <Col span="13" class="goodMax_img">
+                                <img :src="jingxuanFirst.goodsImg" style="width:100%" alt="">
+                                <strong style="margin-top:20px; font-size:20px" >{{jingxuanFirst.minPrice}}￥</strong>         
+                            </Col>                            
+                            <Col span="10"  class="goodMax_content">
+                                <div>
+                                    <h3 class="goodMax_title">商品名称:{{jingxuanFirst.goodsName}}</h3>
+                                     <p class="goodMax_p">商品描述:{{jingxuanFirst.goodsDesc}}</p>                                                   
+                                </div>
+                                <div class="goodMaxButton_box">
+                                    <div class="ybutton">
+                                        <Button @click="toGoodsDetail(jingxuanFirst.goodsID)">查看详情</Button>
+                                        <Button  @click="addCart(jingxuanFirst.goodsID,jingxuanFirst.minPrice,jingxuanFirst.goodsName,jingxuanFirst.goodsImg )">加入购物车</Button>
+                                    </div>
+                                </div>
+                            </Col>
+                        </Col>
+                        <y-goodsitem :item="item"  v-for="item in jingxuan"></y-goodsitem>
+                    </div> 
+                </y-shlef>         
+            </div>
+            <div class="common_f_Box jingxuan_f">
+                <y-shlef :title="title3">
+                   <div slot="content" class="good_content">
+                        <Col class="innerBoxShadow goodMax_common_style" span="12" style="">
+                            <Col span="13" class="goodMax_img">
+                                <img :src="newGoodsFirst.goodsImg" style="width:100%" alt="">
+                                <strong style="margin-top:20px; font-size:20px" >{{newGoodsFirst.minPrice}}￥</strong>         
+                            </Col>                            
+                            <Col span="10"  class="goodMax_content">
+                                <div>
+                                    <h3 class="goodMax_title">商品名称:{{newGoodsFirst.goodsName}}</h3>
+                                     <p class="goodMax_p">商品描述:{{newGoodsFirst.goodsDesc}}</p>                                                   
+                                </div>
+                                <div class="goodMaxButton_box">
+                                    <div class="ybutton">
+                                        <Button @click="toGoodsDetail(newGoodsFirst.goodsID)">查看详情</Button>
+                                        <Button  @click="addCart(newGoodsFirst.goodsID,newGoodsFirst.minPrice,newGoodsFirst.goodsName,newGoodsFirst.goodsImg )"> 加入购物车</Button>
+                                    </div>
+                                </div>
+                            </Col>
+                        </Col>
+                        <y-goodsitem :item="item"  v-for="item in newGoods"></y-goodsitem>
+                    </div> 
+                </y-shlef>         
+            </div>
+        </section>
+    </div>
+</template>
+<script>
+import { mapMutations, mapState } from 'vuex'
+import Yshelf from '@/components/shelf'
+import goodsItem from '@/components/goodsitem'
+import { getData } from '@/api/home.js'
+export default {
+    data(){
+        return{
+            title1:'热销鲜花',
+            title2:'官方精选',
+            title3:'新品',
+            allGoodsList:[],
+            goodMax:[],
+            jingxuanFirst:{},
+            jingxuan:[],
+            newGoodsFirst:[],
+            newGoods:[]
+        }
+    },
+    components:{
+        'y-shlef':Yshelf,
+        'y-goodsitem':goodsItem
+    },
+    mounted(){
+        this.getDataGoodsList()
+    },
+    methods:{
+        getDataGoodsList(){
+            getData({page:1,pageSize:100}).then(res=>{
+                if(res.data.code == 0){
+                    this.allGoodsList = res.data.data.data;
+                    res.data.data.data.forEach((el, index) => {
+                        if(el.isRecom == 1) this.goodMax.push(el)
+                        if(el.isBest == 1) this.jingxuan.push(el)    
+                        if(el.isNew == 1) this.newGoods.push(el)
+
+                        
+                    });
+                    this.jingxuanFirst =  this.jingxuan.splice(0,1)[0]
+                    this.newGoodsFirst =  this.newGoods.splice(0,1)[0]
+                    console.log(this.jingxuanFirst)
+                }
+            })
+        },
+        ...mapMutations(['ADD_CART']),
+        toGoodsDetail(goodsID){
+            window.open('//'+window.location.host +'/#/good/goodsdetali?goodsID=' + goodsID)
+        },
+        addCart(goodsID,goodsPrice, goodsName, goodsImg){
+            this.ADD_CART({goodsID,goodsPrice, goodsName, goodsImg ,goodsNum:1 })
+        }
+    }
+}
+</script>
+<style>
+.section{
+    width: 100vw;
+    padding: 0px 20px 20px;
+    margin: 0 auto;
+    /* margin-bottom: 20px; */
+}
+.banner{
+    width: 100%;
+    height: 550px;
+    margin: 20px 0;
+}
+.banner>div{
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+}
+.banner>div:nth-child(1){
+    background-color: brown
+}
+.zhangshiBox{
+    display: flex;
+    width: 100%;
+    height: 200px;
+    margin-bottom: 20px;
+}
+.zhangshiBox>div{
+    flex:1;
+    background-color: #ffffff;
+    border-radius: 4px;
+    border: 1px solid  #dcdee2;
+}
+.commonBox_header{
+    width: 100%;
+    height: 56px;
+    background:  linear-gradient(#f7f7f7,#fbfbfb);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    color: #17233d;
+    position: relative;
+    z-index: 11;
+    
+}
+.common_f_Box{
+    margin-bottom: 20px;
+    border:1px solid #dcdee2
+}
+.commonBox_content{
+    display: flex;
+    flex-wrap: wrap
+}
+.commonBox_content>div{
+    /* flex: 1; */
+    
+    background-color: #fff;
+}
+.good_content{
+    width: 100%
+}
+/* .jingxuan_f .commonBox_content>div{
+    height:450px;
+} */
+
+.card_float{
+    position: relative;
+    border:1px solid #fff;
+    transition:all 0.5s;
+    height:450px;
+    background-color: #fff;
+}
+.card_float:hover{
+    border:1px solid #dcdee2;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,.1);
+    z-index: 10;
+}
+
+.goodMax_common_style{
+padding:10px 30px 0;
+display: flex;
+justify-content: space-between;
+}
+.goodMax_img{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.goodMax_content{
+    padding-top: 30px;
+    display: flex;
+    
+    flex-direction: column;
+    justify-content: space-between
+}
+
+.goodMax_title{
+    margin-bottom: 10px;
+    color: #17233d;
+    font-size: 18px;
+}
+.goodMax_p{
+    font-size: 14px;
+    color: #515a6e;
+    /* letter-spacing: 1px */
+}
+/* 按钮 */
+.ybutton{
+    /* padding: 0 20px; */
+    display: flex;
+    justify-content: space-between;
+    
+}
+.goodMaxButton_box{
+margin-bottom: 100px
+}
+.goodSmallButton_box{
+    margin-bottom: 20px
+}
+.ybutton>button{
+    flex: 1
+}
+.ybutton>button:nth-child(1){
+    margin-right: 20px;
+}
+
+/* 小的商品 */
+.goodSmall_common_style{
+    padding: 20px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between
+}
+.goodSmall_content{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.goodSmallPrice{
+    font-size: 20px;
+    display: flex;
+    justify-content: center
+}
+.goodSmallButton_box .ybutton{
+    display: none;
+}
+.goodSmall_common_style:hover .goodSmallPrice{
+    display: none;
+}
+.goodSmall_common_style:hover .ybutton{
+    display: flex;
+}
+</style>
+
+

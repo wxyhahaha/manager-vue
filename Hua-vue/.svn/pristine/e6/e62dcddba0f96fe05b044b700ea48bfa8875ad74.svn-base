@@ -1,0 +1,347 @@
+<template>
+    <div class="section">
+        <y-shelf :title="title1">
+            <div slot="content"  style="width:100%;position:relative">
+            <Spin fix v-if="spinShow">
+            </Spin>
+                <ul class="address_Box">
+                    <li v-for="item in addressList" :key="item.id">
+                        <span>收货人:{{item.userName}}</span>
+                        <span>收货地址:{{item.userAddress}}</span>
+                        <span>联系电话:{{item.userPhone}}</span>
+                        <Icon type="md-checkmark-circle" v-if="item.isDefault" class="default_address_icon" size="24" color="#19be6b"/>
+                        <div class="action_Box">
+                            <div @click.stop="showAddressBox(item.id)">修改</div>
+                            <div  @click.stop="deleteAddress(item.id)">删除</div>
+                        </div>
+                    </li>
+                    <li >
+                        <Icon @click.stop="showAddressBox" type="ios-add-circle" class="add_address_icon" size="35" color="#2d8cf0"/>
+                    </li>
+                </ul>
+            </div>
+        </y-shelf>
+        <y-shelf :title="title2">
+            <div slot="content">
+                <div class="order_info_Box">
+                    <Table border ref="selection" :columns="columns12" :data="orderList" style="width:100%" @on-selection-change="rowChange">
+                        <template slot-scope="{ row }" slot="goodsName">
+                            <strong>{{ row.goodsName }}</strong>
+                        </template>
+                        <template slot-scope="{ row }" slot="goodsPrice">
+                            <strong>￥{{ row.goodsPrice }}</strong>
+                        </template>
+                        <template slot-scope="{ row }" slot="goodsImg">
+                            <img :src="row.goodsImg"  alt="" style="width:80px;height:80px;margin:10px auto;display:block">
+                        </template>                      
+                    </Table>
+                    <Row class="order_action_Box">
+                        <Col span="6" class="order_action_Box_left">
+                            <Button @click="handleSelectAll(true)" style="margin-right:10px">全选</Button>
+                            <Button @click="handleSelectAll(false)">取消全选</Button>
+                        </Col>
+
+                        <Col class="order_action_Box_right" span="5" offset="13">
+                            <div>
+                                <span>选中：<strong class="selected_Num">{{totalNum}}</strong>
+                                个商品</span>
+                                <span>总计：<strong class="selected_price">￥{{totalMoney.toFixed(2)}}</strong></span>
+                            </div>
+                            <Button :loading="loading" @click="createOrder">提交订单</Button>  
+                        </Col>
+                    </Row>
+
+                </div>
+                <div>
+                </div>
+            
+            </div>  
+        
+        </y-shelf>
+        <y-address :isShow="isShow"></y-address>
+        <y-pay @sendPay="getPay"></y-pay>
+    </div>
+</template>
+<script>
+import Yshelf from '@/components/shelf'
+import YaddAddress from '@/components/addAddress'
+import YPay from '@/components/payWeiCat'
+import { getLocalStorage, removeLocalStorage } from '@/uilts/storage'
+import { createOd } from '@/api/order'
+import {mapState, mapMutations } from 'vuex'
+import { getAddressData, defaultAddress, insertAddress, delAddress } from '@/api/address'
+export default {
+    data(){
+        return{
+            title1:'收货信息',
+            title2:'订单信息',
+            spinShow:false,
+            isShow:false,
+            loading:false,
+            addressList:[],
+            defaultAddresList:[],
+            columns12: [
+                {
+                    type: 'selection',
+                    width:50,
+                },
+                {
+                    title: '商品名',
+                    slot: 'goodsName'
+                },
+                {
+                    title: '数量',
+                    key: 'goodsNum'
+                },
+                {
+                    title: '商品单价',
+                    slot: 'goodsPrice'
+                },
+                {
+                    title: '商品图片',
+                    slot: 'goodsImg'
+                },
+           
+            ],
+            orderList:[ ],
+            selectList:[]
+        }
+    },
+    computed:{
+        ...mapState(['showAddress','showPayBox']),
+        totalMoney(){
+            let selectList = this.selectList
+            let totalMoney = 0
+            selectList && selectList.forEach(el => {
+                totalMoney +=(el.goodsNum *el.goodsPrice)
+            });
+            return totalMoney
+        },
+        totalNum(){
+            let selectList = this.selectList
+            let totalNum = 0;
+            selectList && selectList.forEach(el => {
+                totalNum += el.goodsNum 
+            });
+            return totalNum
+        }
+    },
+    components:{
+        'y-shelf':Yshelf,
+        'y-address':YaddAddress,
+        'y-pay':YPay
+    },
+    mounted(){
+        console.log(this.$route.query)
+        this.getDataList()
+        this.getAddress()
+    },
+    methods:{
+        ...mapMutations(['SHOW_ADDRESSBOX','DEL_CART','SHOW_PAYBOX']),
+        handleSelectAll (status) {
+            this.$refs.selection.selectAll(status);
+        },
+    getDataList(){
+        if(this.$route.query.goodsInfo){
+            this.orderList = [JSON.parse(this.$route.query.goodsInfo)] ||[]
+            return
+        }else{
+           this.orderList = JSON.parse(getLocalStorage('cartList')) ||[]
+           console.log('orderList',this.orderList)
+        }
+    },
+    createOrder(){
+        console.log(this.$refs.selection)
+        if(this.selectList.length == 0) {
+            this.$Notice.info({
+                title:'温馨提示',
+                desc:'您还没有选中商品'
+            })
+            return
+        }
+
+        if(this.defaultAddresList.length ==0){
+            this.$Notice.info({
+                title:'温馨提示',
+                desc:'您还没有选中地址'
+            })
+            return
+        }
+        let { userAddress, userName, userPhone } = this.defaultAddresList[0]
+        let obj = { userAddress, userName, userPhone }
+        this.loading =true
+        createOd({goodsInfo:this.selectList, ...obj }).then(res=>{
+                this.loading = false
+                if(res.data.code == 0){
+                    this.$Notice.info({
+                        desc:'大佬，可以扫扫捐个款吗？用于维护并进行更新，我会加倍努力,如果人人都献出一点爱,那么我就足够强大了..',
+                        duration:60
+                    })
+                    this.SHOW_PAYBOX(this.showPayBox)
+                    let goodsIdArr = []
+                    this.selectList.forEach(el=>{
+                        goodsIdArr.push({ goodsID: el.goodsID})
+                    })
+                    console.log(goodsIdArr)
+                    this.DEL_CART(goodsIdArr)
+                }
+                if(res.data.code == 300){
+                    console.log('非法篡改金额',res.data)
+                }
+                if(res.data.code == 400){
+                    console.log('创建失败',res.data)
+                }
+                    
+            })   
+    },
+        rowChange(e){
+            this.selectList = e
+        },
+        getAddress(){
+            this.spinShow = true
+            getAddressData().then(res=>{
+                console.log(res)
+                if(res.data.code == 0){
+                    this.spinShow =false
+                    this.addressList = res.data.data.data;
+                    this.defaultAddresList = res.data.data.data.filter(el=>{
+                        return el.isDefault == 1
+                    })
+                }
+            })
+        },
+        addAddress(){
+            insertAddress().then(res=>{
+
+            })
+        },
+        showAddressBox(){
+            this.SHOW_ADDRESSBOX(this.showAddress)
+        },
+        setDefault(){
+            console.log('出发li')
+        },
+        deleteAddress(id){
+            delAddress({id}).then(res=>{
+                if(res.data.code == 0){
+                    this.getAddress()
+                    this.$Message.success('删除成功！')
+                }
+            })
+        },
+        getPay(e){
+            if(e){this.orderList = []}
+        }
+    },
+
+}
+</script>
+<style>
+.section{
+    width: 1200px;
+    margin: 0 auto;
+}
+.section>div{
+    margin-bottom: 20px;
+}
+.address_Box{
+    display: flex;
+    flex-wrap: wrap;
+    padding: 20px 30px;
+}
+.address_Box li{
+    border: 1px solid #dcdee2;
+    background-color: #f8f8f9;
+    width: 250px;
+    height: 130px;
+    margin: 0 20px 20px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px 40px 30px 10px;
+    border-radius: 5px;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+.add_address_icon{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%)
+}
+.address_Box li:hover{
+    border: 1px solid #5cadff;
+    opacity: 0.9;
+}
+.address_Box li span{
+    margin-bottom: 5px;
+    font-size: 13px;
+}
+.default_address_icon{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 10px;
+}
+
+.action_Box{
+    width: 100%;
+    height: 28px;
+    transition: all .6s;
+    position:absolute;
+    left: 0;
+    bottom: -40px;
+    display: flex;
+    box-shadow: 0 -4px 5px rgba(0,0,0,.1)  
+}
+.action_Box>div{
+    flex:1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.action_Box>div:hover{
+    color: #2b85e4
+}
+.address_Box li:hover .action_Box{
+    bottom: 0
+}
+
+.order_info_Box{
+    width: 100%;
+    padding: 20px 30px;
+}
+.ivu-table-cell{
+    /* display: flex; */
+    justify-content: center;
+    align-items: center;
+}
+
+.order_action_Box{
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between
+}
+.order_action_Box_left{
+    display: flex;
+    align-items: center;
+}
+.order_action_Box_right{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.order_action_Box_right>div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center
+}
+.order_action_Box_right button{
+    height: 30px;
+}
+.selected_price,.selected_Num{
+    color: rgb(207,1,12);
+    font-size: 20px;
+}
+</style>

@@ -1,0 +1,42 @@
+<template>
+  <div id="app" v-cloak>
+    <router-view ></router-view>
+  </div>
+</template>
+
+<script>
+
+export default {
+  name: 'app',
+  components:{
+  },
+  data () {
+    return{ }
+  },
+  mounted(){
+    this.get();
+    console.log(this)
+  },
+  methods:{
+    get(){
+      
+    }
+  }
+}
+</script>
+
+<style>
+body{
+  background-color: #ededed
+}
+#app>div{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;  
+  /* overflow-x: auto */
+}
+[v-cloak] {
+    display: none;
+}
+</style>

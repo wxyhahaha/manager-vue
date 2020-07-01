@@ -1,0 +1,39 @@
+<template>
+  <div id="app">
+    <v-header></v-header>
+    <v-section></v-section>
+  </div>
+</template>
+
+<script>
+import header from './components/head/head'
+import section from './components/index/section'
+export default {
+  name: 'app',
+  components:{
+    'v-header':header,
+    'v-section':section
+  },
+  data () {
+    return {
+      msg: 'Welcome to Your Vue.js App' 
+    }
+  },
+  mounted(){
+    this.get();
+  },
+  methods:{
+    get(){
+      his.$ajax.get('http://47.100.57.39:7001/index').then(res=>{
+        console.log(res)
+      })
+    }
+  }
+}
+</script>
+
+<style>
+body{
+  background-color: #f8f8f9
+}
+</style>

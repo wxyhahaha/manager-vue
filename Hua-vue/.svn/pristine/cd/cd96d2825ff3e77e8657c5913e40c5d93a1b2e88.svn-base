@@ -1,0 +1,122 @@
+<template>
+    <div class="goodsDetail_Box">
+        <Row class="goodsDetail_content" type="flex">
+            <Col span="12" class="goodsDetail_left">
+                <div class="pic_box">
+                    <ul class="smallpicUl">
+                        <li v-for="pic in smallPics"><a href="javascript:;"><img :src="pic" alt=""></a></li>
+                    </ul>
+                    <div class="bigpicBox">
+                        <img src="http://localhost:7001/public/img/fzubpthgm21553695517445.jpg" alt="">
+                    </div>
+                </div>
+            </Col>    
+            <Col span="12" class="goodsDetail_right">
+                <h3>丝氨酸就会方法对付</h3>
+                <p>商品简单描述快速打开就睡到几点科技开发</p>
+                <strong>5554￥</strong>
+                <div>
+                    <label for="">数量 ：</label>
+                    <InputNumber :max="10" :min="1" v-model="goodsNum"></InputNumber> 
+                </div>
+                <div>
+                    <Button type="error">提交订单</Button>
+                </div>
+            </Col>   
+        </Row>
+    </div>
+</template>
+<script>
+export default {
+    data(){
+     return {
+         searchData:{
+             goodsID:undefined,
+             page:1,
+             pageSize:10
+         },
+         goodsNum:undefined,
+         smallPics:[],
+         
+     }
+    },
+    mounted(){
+        this.searchData.goodsID = parseInt(this.$route.query.goodsID)
+        console.log(this.searchData)
+        this.getAssignGoods()
+    },
+    methods:{
+        getAssignGoods(){
+            this.$ajax.post('http://localhost:7001/hua/good/list',this.searchData).then(res=>{
+                if(res.data.code == 0){
+                    console.log(res.data.data.data)
+                    this.smallPics = JSON.parse(res.data.data.data[0].goodsPics) 
+
+                }
+            })
+        }
+    }
+}
+</script>
+<style>
+.goodsDetail_Box{
+    width: 1400px;
+    margin: 20px auto;
+    height: auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+}
+.goodsDetail_content{
+    height:500px;
+}
+.goodsDetail_left{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.pic_box{
+    width: 80%;
+    display: flex;
+    
+}
+.smallpicUl{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+
+}
+.smallpicUl li{
+width: 80px;
+    height: 80px;
+    border-radius: 5px;
+    border: 1px solid #e8eaec
+}
+.smallpicUl{
+    transition: all 0.2s
+}
+.smallpicUl li:hover {
+    border: 2px solid #2db7f5
+}
+
+.smallpicUl img{
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    
+}
+.bigpicBox{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.bigpicBox img{
+width: 80%;
+
+}
+.goodsDetail_right{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+</style>

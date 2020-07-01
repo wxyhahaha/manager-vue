@@ -1,0 +1,8 @@
+export  const ADD_CART = 'ADD_CART'
+export  const INIT_CART = 'INIT_CART'
+export  const DEL_CART = 'DEL_CART'
+export  const EIDT_CART = 'EIDT_CART'
+export  const SHOW_ADDRESSBOX = 'SHOW_ADDRESSBOX'
+export  const SHOW_PAYBOX = 'SHOW_PAYBOX'
+export  const ADD_ADDRESS = 'ADD_ADDRESS'
+export  const UPDATE_ADDRESS = 'UPDATE_ADDRESS'

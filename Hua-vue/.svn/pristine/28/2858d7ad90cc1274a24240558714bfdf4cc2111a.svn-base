@@ -1,0 +1,168 @@
+<template>
+    <section id="section">
+        <div class="section_top">
+
+        </div>
+        <div class="banner_bg" :style="banner_bg">
+            <div class="main_manu">
+                <ul>
+                    <li><a href="">鲜花</a> </li>
+                    <li><a href="">永生花</a> </li>
+                    <li><a href="">礼品</a> </li>
+                    <li><a href="">话语大全</a> </li>
+                </ul>
+            </div>
+            <!-- <div class="bannerBox">
+                <Carousel autoplay v-model="value2" loop
+                autoplay-speed='8000' 
+                @on-change="bannerIndex">
+                    <CarouselItem v-for="item in bannerList">
+                        <div class=""><img :src="item" alt=""></div>
+                    </CarouselItem>
+
+
+                </Carousel>              
+            </div>         -->
+        </div>  
+          
+    </section>
+</template>
+<script>
+ export default {
+        data(){
+            return{
+                // bannerList:['../src/assets/images/banner_1.jpg','../src/assets/images/banner_2.jpg','../src/assets/images/banner_3.jpg'],
+                bannerindex:'',
+
+                
+            }
+        },
+        methods:{
+            bannerIndex(index){
+
+                console.log(index)
+                this.bannerindex = index + 1
+                if(this.bannerindex > this.bannerList.length - 1){
+                    this.bannerindex = 0
+                }           
+                
+            }
+        },
+        computed:{
+            banner_bg(){
+                console.log('computed',this.bannerindex)
+                return{
+                    // 'background-image':'url(' + this.bannerList[this.bannerindex] + ')'
+                }
+            }
+        }
+    }
+   
+</script>
+<style >
+*{
+    transition: all 0.2s;
+}
+    section{
+        width: 100%;
+        /* height: 100vh; */
+        /* background-color: red;   */
+        /* padding-top: 150px; */
+    }
+    .section_top{
+        width: 100%;
+        height: 100px;
+    }
+    .banner_bg{
+        width:100%;
+        height: 70vh;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        display: flex;
+        /* justify-content: center; */
+        align-items: center;
+        /* filter: blur(2px) */
+        flex-direction: column;
+    }
+    .bannerBox{
+        width:1000px;
+        /* margin: 0 auto; */
+        height: 50vh;
+    }
+    .bannerBox img{
+        width: 1000px;
+        height: 50vh;
+    }
+    .main_manu{
+        width: 100%;
+        /* margin: 0 auto; */
+        height: 40px;
+        background-color:#f8f8f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        /* border-top: 2px solid #ff9900; */
+        
+        
+    }
+    .main_manu ul{
+        width: 1000px;
+        display: flex;
+        
+        height: 48px;
+    }
+    .main_manu ul li a{
+        color: #17233d; 
+    }
+    .main_manu ul li{
+        /* background-color:  */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100px;
+        height: 100%;
+        cursor: pointer;
+        position: relative;
+    }
+    .main_manu ul li::after{
+        position: absolute;
+        content: '';
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 2px;
+        border-radius: 5px;
+        background-color: #f8f8f9;
+        transition: all 0.5s;
+
+    }
+    .main_manu ul li::before{
+        position: absolute;
+        content: '';
+        top: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 2px;
+        border-radius: 5px;
+        background-color: #f8f8f9;
+        transition: all 0.25s;
+
+    }
+    .main_manu ul li:hover::after{
+        width: 40px;
+    }
+    .main_manu ul li:hover::before{
+        width: 80px;
+    }
+    .main_manu ul li:hover{
+        background-color: #5cadff;
+    }
+     .main_manu ul li:hover a{
+         color: #fff; 
+     }
+</style>
+
+

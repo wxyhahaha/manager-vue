@@ -1,0 +1,122 @@
+<template>
+    <div class="footer">
+        <footer >
+            <Row tyle:flex class="service_Box">
+                <Col span="4">
+                    <h4>关于订单</h4>
+                    <ul>
+                        <li><a href="">购买指南</a> </li>
+                        <li><a href="">阿瑟东</a> </li>
+                        <li><a href="">阿瑟东</a> </li>
+                    </ul>
+                </Col>
+                <Col span="4">
+                    <h4>关于订单</h4>
+                    <ul>
+                        <li><a href="">阿瑟东</a> </li>
+                        <li><a href="">阿瑟东</a> </li>
+                        <li><a href="">阿瑟东</a> </li>
+                    </ul>
+                </Col>
+                <Col span="4">
+                    <h4>关于订单</h4>
+                    <ul>
+                        <li><a href="">阿瑟东</a> </li>
+                        <li><a href="">阿瑟东</a> </li>
+                       <li><a href="">阿瑟东</a> </li>
+                    </ul>
+                </Col>
+                <Col span="4">
+                    <h4>关于订单</h4>
+                    <ul>
+                        <li><a href="">阿瑟东</a> </li>
+                        <li><a href="">阿瑟东</a> </li>
+                        <li><a href="">阿瑟东</a> </li>
+                    </ul>
+                </Col>
+                <Col span="8" class="call_me">
+                    <div>
+                        <h3>联系我哦</h3>
+                        <p>13411079644</p>
+                    </div>
+
+                </Col>
+            </Row>
+            <div class="copyright_Box">
+                <p>
+                    Copyright ©2019, wxy. All Rights Reserved.本网站设计内容大部分属锤子科技
+                </p>
+                <a href="">法律声明</a>
+                <Divider type="vertical" />
+                <a href="">隐私条框</a>
+            </div>
+        </footer>
+    </div>
+</template>
+<script>
+export default {
+    
+}
+</script>
+<style>
+.footer{
+    width: 100%;
+    min-width: 1200px;
+    margin: 20px auto 0;
+    /* height: 300px; */
+    background-color: #f7f7f7;
+    /* position: fixed; */
+
+}
+footer{
+    padding: 70px 0 30px;
+    width: 1200px;
+    margin: 0 auto;
+    /* display: flex; */
+    
+}
+footer>div{
+    flex: 1
+}
+.service_Box h4{
+    margin-bottom: 10px;
+}
+.service_Box li{
+    margin-bottom: 5px;;
+}
+.service_Box{
+    padding: 0 0 20px;
+    border-bottom: 1px solid #dcdee2;
+}
+.service_Box>div{
+    height: 100%;
+}
+.call_me{
+    display: flex;
+    /* flex-direction: column; */
+    justify-content: flex-end;
+    /* align-items: flex-end */
+}
+.call_me>div{
+    /* display: flex; */
+    align-self: flex-end;
+
+}
+.call_me h3{
+    font-size: 30px;
+    text-align: right
+}
+.call_me p{
+    font-size: 32px;
+    
+}
+.copyright_Box{
+    padding: 20px 0 0;
+    display: flex;
+    align-items: center;
+}
+.copyright_Box p{
+   margin-right: 10px 
+}
+
+</style>

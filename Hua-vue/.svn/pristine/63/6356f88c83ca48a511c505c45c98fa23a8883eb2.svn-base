@@ -1,0 +1,141 @@
+<template>
+    <div class="header">
+        <header>
+            <nav class="nav">
+                <div class="nav_left">
+                    Logo
+                </div>
+                <div class="nav_right">
+                    <div class="searchBox">
+                        <Input search size="large" placeholder="Enter something..." />
+                    </div>                    
+                    <div class="nav_moreInfo">
+                        <a href="" class="a_allGoods">全部商品</a>
+                        <span class="spread"></span>
+                        <Icon class="md-person" type="md-person" size="25" color='#808695'/>
+                        <div class="cartBox">
+                            <Icon class="md-cart" type="md-cart" size="25" color='#808695'/>
+                            <a class="small_car_circle">
+                                0
+                            </a>
+                        </div>                        
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="nav2">
+            <div class="nav2_wrapper">
+                <ul>
+                    <li><a href="#">首页</a></li>
+                    <li><a href="#">全部</a></li>
+                    <li><a href="#">鲜花</a></li>
+                    <li><a href="#">永生花</a></li>
+                    <li><a href="#">礼品</a></li>
+                    <li><a href="#">花语大全</a></li>     
+                </ul>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+export default {
+    
+}
+</script>
+<style>
+.header{
+    /* margin-bottom: 20px; */
+}
+.nav{
+    width: 100%;
+    height: 104px;
+    padding: 0 20px;
+    background: #1a1a1a;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+.nav>div{
+    display: flex;
+    color:#f8f8f9;
+}
+.searchBox{
+    width: 350px;
+    margin-right: 50px;
+}
+.nav_moreInfo{
+    display: flex;
+    align-items: center;
+}
+.cartBox{
+    display: flex;
+    align-items: center;
+}
+.a_allGoods{
+    font-size: 16px;
+    margin-right: 50px;
+}
+.spread{
+    display: block;
+    width: 1px;
+    height: 20px;
+    margin-right: 50px;
+    background-color: #515a6e;
+
+}
+.md-person{
+    
+    margin-right: 30px;
+}
+.md-cart{
+    margin-right: 5px; 
+}
+.small_car_circle{
+    width: 22px;
+    height: 22px;
+    font-size: 16px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #808695;
+}
+.nav2_wrapper{
+    width: 100;
+    height: 88px;
+    padding: 0 20px;    
+    background-color: #f7f7f7;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+    display: flex;
+    align-items: center;
+}
+.nav2_wrapper ul{
+    display: flex;
+    width: 1400px;
+    margin: 0 auto;
+}
+.nav2_wrapper ul li{
+    width: 100px;   
+    position:relative; 
+}
+.nav2_wrapper ul li:first-child{
+    margin-left: 30px;
+}
+.nav2_wrapper ul li a{
+    color: #515a6e;
+    font-size: 15px;
+    font-weight: 500
+}
+.nav2_wrapper ul li::before{
+    content: "";
+    position:absolute;
+    width: 3px;
+    height: 3px;
+    background-color: #808695;
+    top: 50%;
+    left: -25px;
+    transform: translateY(-50%) ;
+}
+</style>

@@ -1,0 +1,32 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+
+const Index = () =>import('../page/index')
+const Home = () =>import('../page/home/index')
+const Good = () =>import('../page/good/index')
+Vue.use(Router)
+
+export default new Router({
+  routes: [
+    {
+
+      path: '/',
+      name: 'Index',
+      component:Index,
+      redirect:'/home', 
+      children:[
+        {
+          path: '/home',
+          name: 'Home',
+          component:Home,
+        },
+        {
+          path: '/good',
+          name: 'Good',
+          component:Good,
+        },
+      ]
+    },
+
+  ]
+})

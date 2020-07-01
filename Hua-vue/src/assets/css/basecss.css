@@ -1,0 +1,19 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+html, body{
+    width: 100%
+}
+ul li {
+    list-style: none
+}
+.innerBoxShadow{
+    transition:all 0.3s;
+    cursor: pointer;
+
+}
+.innerBoxShadow:hover{
+    box-shadow:0 0px 50px rgba(0,0,0,.2) inset
+}

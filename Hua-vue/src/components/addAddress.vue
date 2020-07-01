@@ -1,0 +1,142 @@
+<template>
+    <transition name="address_fade">
+        <div v-if="showAddress" style="position:fixed;wdith:100%;height:100%;width:100%;top:0;left:0;display:flex;justify-content:center;align-items:center;z-index:99999;">
+            <div class="addAddress_Box">
+                <Form ref="formInline" :label-width="80"  label-position="left" :model="formInline" :rules="ruleInline" inline class="login_form">
+                    <FormItem label="昵称" prop="userName" >
+                        <Input type="text" v-model="formInline.userName" placeholder="昵称">
+                            <Icon type="ios-person-outline" slot="prepend"></Icon>
+                        </Input>
+                    </FormItem>
+                    <FormItem label="手机号码" prop="userPhone" >
+                        <Input type="text" v-model="formInline.userPhone" placeholder="手机号码">
+                            <Icon type="ios-lock-outline" slot="prepend"></Icon>
+                        </Input>
+                    </FormItem>
+
+                    <FormItem label="地址" prop="userAddress"  >
+                        <Input type="textarea" :autosize="true" v-model="formInline.userAddress" placeholder="地址" >
+                        </Input>
+                    </FormItem>
+                    <FormItem label="是否默认" prop="isDefault" >
+                        <Select v-model="formInline.isDefault" style="width:80px">
+                            <Option  :value="0" >否</Option>
+                            <Option  :value="1" >是</Option>
+                        </Select>
+                    </FormItem>
+                    <div style="display:flex;justify-content:space-around">
+                        <Button style="width:100px" v-if="ifAddAddress" :loading="loading" type="success" @click="handleSubmit('formInline')">添加</Button>
+                        <Button style="width:100px" v-if="!ifAddAddress" :loading="loading" type="success" @click="handleSubmit('formInline')">修改</Button>
+                        <Button style="width:100px"  @click="cancel">取消</Button>
+                    </div>
+
+                                    
+                </Form>            
+            </div>
+        </div>
+    </transition>
+
+</template>
+<script>
+import {insertAddress,updateAddress, getAddressData } from '@/api/address'
+import {mapState, mapMutations } from 'vuex'
+import { setTimeout } from 'timers';
+export default {
+    data(){
+        return{
+                formInline: {
+                    userName: '',
+                    userPhone: '',
+                    userAddress:'',
+                    isDefault:0,
+                    
+                },
+                loading:false,
+                ruleInline: {
+                    userName: [
+                        { required: true, message: '请输入昵称', trigger: 'blur' }
+                    ],
+                    userPhone: [
+                        { required: true, message: '请输入手机号码.', trigger: 'blur' },
+                    ],
+                    userAddress: [
+                        { required: true, message: '请输入地址.', trigger: 'blur' },
+                    ],
+                },
+        }
+    },
+    props:['addressId'],
+    computed:{
+        ...mapState(['showAddress','ifAddAddress'])
+    },
+    mounted(){
+        if(!addressId)this.getUserAddress()
+        
+    },
+    methods:{
+        ...mapMutations(['SHOW_ADDRESSBOX']),
+            handleSubmit(name) {
+                this.$refs[name].validate((valid) => {
+                    if (valid) {
+                        this.loading = true
+                        insertAddress(this.formInline).then(res=>{
+                            console.log(res)
+                            if(res.data.code == 0){
+                                this.loading = true
+                                setTimeout(()=>{
+                                    
+                                    this.$router.go('/order')
+                                },200)
+                                
+                                this.$Message.success('添加成功!');
+                            }
+                            
+                        })
+                        
+                        
+                    } else {
+                        this.$Message.error('添加失败!');
+                    }
+                })
+            },
+            getUserAddress(){
+                let id = addressId
+                getAddressData(id).then(res=>{
+                    let { userName, userPhone, userAddress,isDefault } = res.data.data.data[0]
+                    this.formInline.userName=userName
+                    this.formInline.userPhone=userPhone
+                    this.formInline.userAddress=userAddress
+                    this.formInline.isDefault=isDefault
+                    console.log(this.formInline)
+                })
+            },
+            cancel(){
+                this.SHOW_ADDRESSBOX(this.showAddress)
+            }
+    }
+}
+</script>
+<style>
+.addAddress_Box{
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 30px ;
+    border: 1px solid #dcdee2;
+    transition: all 0.3s ease-out;
+}
+.addAddress_Box:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 0 10px rgba(23,35,61,0.2);
+}
+
+.addAddress_Box>form{
+    display: flex;
+    flex-direction: column
+}
+.address_fade-leave-active,.address_fade-enter-active{
+    transition: all 0.5s;
+}
+.adddress_fade-enter,.address_fade-leave-to{
+    opacity: 0;
+}
+</style>
