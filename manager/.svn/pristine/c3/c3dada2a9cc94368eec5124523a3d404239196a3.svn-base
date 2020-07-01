@@ -1,0 +1,12 @@
+import Cookie from 'js-cookie'
+export function getLoginToken(){
+
+    return localStorage.getItem('loginToken');
+}
+export function setLoginToken(token){
+    console.log('token',token)
+    return localStorage.setItem('loginToken',token) 
+}
+export function removeLoginToken(){
+    return localStorage.removeItem('loginToken')
+}

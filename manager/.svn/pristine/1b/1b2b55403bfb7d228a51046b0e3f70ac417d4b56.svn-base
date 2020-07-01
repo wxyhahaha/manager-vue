@@ -1,0 +1,30 @@
+<template>
+    <div class="all_wapper">
+        <!-- <y-header></y-header> -->
+        <div class="content">
+            <y-sideBar></y-sideBar>
+            <router-view></router-view>
+        </div>
+    </div> 
+</template>
+<script>
+import YsideBar from '@/components/sideBar/index'
+export default {
+    components:{
+        'y-sideBar':YsideBar
+    }
+}
+</script>
+<style>
+.all_wapper{
+    width: 100%;
+    height: 100%;
+}
+.content{
+    width: 100%;
+    height: 100%;
+    padding: 48px 0 0 200px
+}
+</style>
+
+

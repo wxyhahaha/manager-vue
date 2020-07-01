@@ -1,0 +1,47 @@
+<template>
+    <div>
+        <Row type="flex">
+            <Col span="6">
+            <img src="http://localhost:7001/public/img/web3ka0sxd1553396644347.jpg" alt="" class="goodsPic">
+            </Col>
+            <Col span="18">
+                <Row>
+                    <label for="">订单号:</label>
+                    <p>65481254</p>
+                </Row>
+                <br>
+                <Row>
+                    <label for="">详细地址:</label>
+                    <p>广州市海珠区广州大道南</p>
+                </Row>
+                <br>
+                <Row>
+                    <label for="">详细地址:</label>
+                </Row>
+            </Col>
+
+
+        </Row>
+        <Row>
+            <Col span="18">
+                 <label for="">订单状况:</label>
+                <Steps :current="1" size="small">
+                    <Step title="已完成" content="付款"></Step>
+                    <Step title="进行中" content="发货"></Step>
+                    <Step title="待进行" content="收货"></Step>
+                </Steps>
+            </Col>
+        </Row>
+    </div>
+</template>
+<script>
+export default {
+    
+}
+</script>
+<style scoped>
+.goodsPic{
+    width: 150px;
+    height: 150px;
+}
+</style>

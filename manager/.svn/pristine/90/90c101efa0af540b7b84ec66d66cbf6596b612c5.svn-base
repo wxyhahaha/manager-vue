@@ -1,0 +1,293 @@
+<template>
+    <div>
+        <div class="input_box">
+            <Input v-model="searchData.goodsID" class="input">
+                <span slot="prepend">商品编号</span>
+            </Input>
+            <Input v-model="searchData.categoryId" class="input">
+                <span slot="prepend">分类编号</span>
+            </Input>
+            <Input v-model="searchData.goodsName" class="input">
+                <span slot="prepend">商品名</span>
+            </Input>
+            <div class="Pick_box">
+                <label for="" class="label">是否推荐</label>
+                <Select v-model="searchData.isRecom" style="width:100px">
+                        <Option v-for="item in recomand" :value="item.value" :key="item.value">{{ item.key }}</Option>
+                </Select>               
+            </div>
+            <div class="Pick_box">
+                <label for="" class="label">是否上架</label>
+                <Select v-model="searchData.isSale" style="width:100px">
+                        <Option v-for="item in sale" :value="item.value" :key="item.value">{{ item.key }}</Option>
+                </Select>               
+            </div>
+            <div class="Pick_box">
+            <label for="" class="label">增加时间</label> <DatePicker type="datetimerange" placeholder="Select date and time" style="width: 300px" @on-change="timeChange">
+            </DatePicker>
+            </div>
+
+        </div>
+    <Button type="primary" @click="search" icon="ios-search">查询</Button>
+    <Button type="success" @click="addAddress" icon="ios-add"  >添加</Button>
+    <br>
+   
+    <Table border :columns="columns12" :data="dataList" class="ytable" :loading="loading">
+        <template slot-scope="{ row }" slot="goodsID">
+            <strong>{{ row.goodsID }}</strong>
+        </template>
+        <template slot-scope="{ row }" slot="isSale" style="displlay:flex">
+            <Icon v-if="row.isSale == 1" type="ios-checkmark-circle" color="#19BE6B" size="22" />
+            <Icon v-else  type="ios-close-circle" color="#F16A43" size="22" />
+        </template>         
+        <template slot-scope="{ row }" slot="isRecom" style="displlay:flex">
+            <Icon v-if="row.isRecom == 1" type="ios-checkmark-circle" color="#19BE6B" size="22" />
+            <Icon v-else  type="ios-close-circle" color="#F16A43" size="22" />
+
+        </template>   
+        <template slot-scope="{ row }" slot="goodsImg">
+            <img :src="row.goodsImg" alt="" style="width:100px;height:100px;padding:10px">
+        </template>     
+        <template slot-scope="{ row, index }" slot="action">
+            <Button type="primary" size="small" style="margin-right: 5px" @click="upDateAddress(index)">编辑</Button>
+            <Button type="error" size="small" @click="remove(index)">删除</Button>
+        </template>
+        
+    </Table>
+    <Page :total="totalRow" :page-size="10" @on-page-size-change="pageSizeChange" @on-change="pageChange" show-sizer />
+    </div>
+
+
+
+
+    
+</template>
+<script>
+import { fitchDataList, removeData } from '@/api/apiGoods'
+    export default {
+        data () {
+            return {
+                searchData:{
+                    goodsID:undefined,
+                    categoryId:undefined,
+                    goodsName:undefined,
+                    isRecom:undefined,
+                    isSale:undefined,
+                    dateAdd:undefined,
+                    dateUpdate:undefined,
+                    page:1,
+                    pageSize:10
+                },
+                totalRow:undefined,
+                loading:true,
+                columns12: [
+                    {
+                        title: '商品编号',
+                        slot: 'goodsID'
+                    },
+                    {
+                        title: '分类编号',
+                        key: 'categoryId'
+                    },
+                    {
+                        title: '商品名',
+                        key: 'goodsName'
+                    },
+                    {
+                        title: '商品封面',
+                        slot: 'goodsImg'
+                    },
+                    {
+                        title: '是否上架',
+                        slot: 'isSale'
+                    },
+                    {
+                        title: '是否推荐',
+                        slot: 'isRecom'
+                    },
+                    {
+                        title: '库存',
+                        key: 'stores'
+                    },
+                    {
+                        title: '原价',
+                        key: 'orignPrice'
+                    },
+                    {
+                        title: '最低价',
+                        key: 'minPrice'
+                    },
+                    {
+                        title: '销量',
+                        key: 'saleNum'
+                    },
+                    {
+                        title: '增加时间',
+                        key: 'dateAdd'
+                    },
+                    {
+                        title: 'Action',
+                        slot: 'action',
+                        width: 150,
+                        align: 'center'
+                    }
+                ],
+                dataList: [ ],
+                recomand:[
+                    {
+                        key:'否',
+                        value:0
+                    },
+                    {
+                        key:'是',
+                        value:1
+                    }
+                ],
+                sale:[
+                    {
+                        key:'否',
+                        value:0
+                    },
+                    {
+                        key:'是',
+                        value:1
+                    }
+                ]
+            }
+        },
+        mounted(){
+            try{
+
+            }catch(e){
+                
+            }
+            this.fitchData()
+        },
+        methods: {
+            show (index) {
+                this.$Modal.info({
+                    title: '用户信息',
+                    content: `Name：${this.dataList[index].name}<br>Age：${this.dataList[index].age}<br>Address：${this.dataList[index].address}`
+                })
+            },
+            remove (index) {
+                
+                this.confirm('确定要删除？','删除用户后无法恢复',()=>{
+                    let id = this.dataList[index].id
+                    this.loading =true
+                    removeData(id).then((res)=>{
+                        if(res.data.code == 0){
+                            console.log(res)
+                            this.loading = false
+                            this.fitchData()
+                            this.$Notice.success({title:'删除成功'});
+                            
+                        }
+                    }).catch((res)=>{
+                        console.log(res)
+                    })
+                })
+
+            },
+            pageChange(page){
+                this.searchData.page = page
+                this.fitchData()
+            },
+            pageSizeChange(pageSize){
+                this.searchData.pageSize = pageSize;
+                this.fitchData()
+            },
+            fitchData(){
+                let searchData = this.searchData
+                console.log(searchData)
+                this.loading=true
+                fitchDataList(this.searchData).then((res)=>{
+                    console.log(res)
+                    if(res.data.code ==0){
+                        this.loading=false
+                        
+                        this.totalRow = res.data.result.totalRow
+                        this.dataList = res.data.result.data
+                        this.searchData.goodsID=undefined,
+                        this.searchData.categoryId=undefined
+                        this.searchData.goodsName=undefined
+                        this.searchData.isRecom=undefined
+                        this.searchData.isSale=undefined
+                    }
+                    else{
+                        this.$Loading.error();
+                    }
+
+                }).catch((res)=>{
+                    this.$Loading.error();
+                    console.log(res)
+                })
+            },
+            timeChange(e){
+                this.searchData.dateAdd = e[0];
+                this.searchData.dateUpdate = e[1]
+            },
+            search(){
+                this.fitchData();
+            },
+            confirm (title, content, fn) {
+                this.$Modal.confirm({
+                    title: title,
+                    content: content,
+                    onOk: () => {
+                        fn()
+                    },
+                    onCancel: () => {
+                        this.$Message.info('取消');
+                    }
+                });
+            },
+            addAddress(){
+                this.$router.push({path:'/goods/goodsList/add'})
+            },
+            upDateAddress(index){
+                let id = this.dataList[index].id
+                this.$router.push({path:'/goods/goodsList/add',query:{id}})
+            }
+        }
+    }
+</script>
+<style >
+.input{
+    width:200px !important;
+}
+.input_box{
+    display: flex;
+    flex-wrap:wrap;
+    margin-bottom: 10px
+}
+.input_box>div{
+margin-right: 10px;
+margin-bottom:10px
+}   
+.ytable{
+    margin-top: 20px;
+    margin-bottom: 20px
+}
+.label{
+    padding: 4px 7px;
+    font-size: inherit;
+    font-weight: 400;
+    color: #515a6e;
+    display: flex;
+    align-items: center;
+    background-color: #f8f8f9;
+    border: 1px solid #dcdee2;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+.Pick_box{
+    display: flex
+
+}
+.ivu-table-cell{
+    display:flex;
+    justify-content:center;
+}
+</style>
+

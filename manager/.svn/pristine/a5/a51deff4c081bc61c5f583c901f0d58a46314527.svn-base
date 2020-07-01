@@ -1,0 +1,30 @@
+import request from '@/utils/request.js'
+export function fitchDataList(data){
+    return request({
+        url:'manager/goods/list',
+        method:'post',
+        data:data
+    })
+}
+export function removeData(id){
+    return request({
+        url:'manager/goods/del',
+        method:'post',
+        data:{ id }
+    })
+}
+export function insertData(data){
+    console.log(data)
+    return request({
+        url:'manager/goods/insert',
+        method:'post',
+        data:data
+    })
+}
+export function updateDataList(data){
+    return request({
+        url:'manager/goods/set',
+        method:'post',
+        data:data
+    })
+}

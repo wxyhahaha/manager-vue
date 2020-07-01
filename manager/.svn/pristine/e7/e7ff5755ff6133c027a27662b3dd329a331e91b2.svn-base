@@ -1,0 +1,29 @@
+import request from '@/utils/request'
+export function fitchDataList(data){
+    return request({
+        url:'manager/address/list',
+        method:'post',
+        data:data
+    })
+}
+export function removeData(id){
+    return request({
+        url:'manager/address/del',
+        method:'post',
+        data:{id}
+    })
+}
+export function insertData(data){
+    return request({
+        url:'manager/address/add',
+        method:'post',
+        data:data
+    })
+}
+export function updateData(data){
+    return request({
+        url:'manager/address/set',
+        method:'post',
+        data:data
+    })
+}

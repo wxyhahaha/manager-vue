@@ -1,0 +1,33 @@
+<template>
+    <!-- <div class="all_wapper">
+        <y-header></y-header>
+        <div class="content">
+            <y-sideBar></y-sideBar>
+            <router-view></router-view>
+        </div>
+    </div>  -->
+    <div class="layout">
+        <Layout>
+            <y-header></y-header>
+            <y-sideBar></y-sideBar>
+
+        </Layout>
+    </div>  
+</template>
+<script>
+import YsideBar from '@/components/sideBar/index'
+import Yheader from '@/components/header/index'
+export default {
+    components:{
+        'y-sideBar':YsideBar,
+        'y-header':Yheader
+    }
+}
+</script>
+<style scoped>
+
+
+.layout{}
+</style>
+
+

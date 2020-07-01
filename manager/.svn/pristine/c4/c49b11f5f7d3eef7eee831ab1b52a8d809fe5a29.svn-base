@@ -1,0 +1,305 @@
+
+<template>
+    <div>
+        <div class="input_box">
+            <Input v-model="searchData.userName" class="input">
+                <span slot="prepend">用户名</span>
+            </Input>
+            <Input v-model="searchData.userPhone" class="input">
+                <span slot="prepend">用户手机</span>
+            </Input>
+            <Input v-model="searchData.orderNo" class="input">
+                <span slot="prepend">订单号</span>
+            </Input>
+            <div class="Pick_box">
+                <label for="" class="label">交易时间</label> <DatePicker type="datetimerange" placeholder="Select date and time" style="width: 300px" @on-change="timeChange">
+                </DatePicker>
+            </div>
+
+        </div>
+    <Button type="primary" @click="search" icon="ios-search">查询</Button>
+    <br>
+   
+    <Table border :columns="columns12" :data="dataList" class="ytable" :loading="loading">
+        <template slot-scope="{ row }" slot="userName">
+            <strong>{{ row.userName }}{{row.userPhone&&row.userName?'['+row.userPhone+']':""}}</strong>
+        </template>
+        <template slot-scope="{ row }" slot="orderStatus" style="displlay:flex">
+            <strong>{{ orderStatus[0][row.orderStatus]  }}</strong>
+        </template>         
+        <template slot-scope="{ row, index }" slot="action" >
+            <div class="action"  style="">
+            <Button type="text" size="small"  @click="show(index)">订单详情</Button>
+            <Button type="text" size="small" v-if="row.orderStatus == 0 || row.orderStatus ==1" @click="show(index)">设置成功</Button>
+            <Button type="text" size="small"  v-if="row.orderStatus == 0" @click="show(index)">发货</Button>
+            <Button type="text" size="small"  v-if="row.orderStatus == 2 ||row.orderStatus == 1"  @click="show(index)">退货</Button>
+
+            <Button type="text" size="small" @click="remove(index)">删除</Button>
+            </div>
+
+        </template>
+        
+    </Table>
+    <Page :total="totalRow" :page-size="10" @on-page-size-change="pageSizeChange" @on-change="pageChange" show-sizer />
+    </div>
+
+
+
+
+    
+</template>
+<script>
+import orderDetail from '@/pages/order/orderDetail'
+import { fitchDataList, removeData } from '@/api/apiOrder'
+    export default {
+        data () {
+            return {
+                searchData:{
+                    userName:undefined,
+                    userPhone:undefined,
+                    orderNo:undefined,
+                    dateAdd:undefined,
+                    dateUpdate:undefined,
+                    page:1,
+                    pageSize:10
+                },
+                totalRow:undefined,
+                loading:true,
+                columns12: [
+                    {
+                        title: '用户',
+                        slot: 'userName'
+                    },
+                    {
+                        title: '订单号',
+                        key: 'orderNo'
+                    },
+                    {
+                        title: '商品数',
+                        key: 'goodsNum'
+                    },
+                    {
+                        title: '订单状态',
+                        slot: 'orderStatus'
+                    },
+                    {
+                        title: '订单总额',
+                        key: 'realTotalMoney'
+                    },
+                    {
+                        title:'实际支付',
+                        key:'needPay'
+                    },
+                    {
+                        title: '交易时间',
+                        key: 'dateAdd'
+                    }, 
+                    {
+                        title: '操作',
+                        slot: 'action',
+                        width: 150,
+                        align: 'center'
+                    }
+                ],
+                dataList: [ ],
+                // -3:用户拒收 -2:未付款的订单 -1：用户取消 0:待发货 1:配送中 2:用户确认收货
+                orderStatus:[
+                    {
+                        '1' :'用户拒收',
+                        '-2':'未付款的订单',
+                        '-1':'用户取消',
+                        '0' :'待发货',
+                        '1' :'配送中',
+                        '2' :'用户确认收货'
+                    }
+                    // {
+                    //     key:'用户拒收',
+                    //     value:-3
+                    // },
+                    // {
+                    //     key:'未付款的订单',
+                    //     value:-2
+                    // },
+                    // {
+                    //     key:'用户取消',
+                    //     value:-1
+                    // },
+                    // {
+                    //     key:'待发货',
+                    //     value:0
+                    // },
+                    // {
+                    //     key:'配送中',
+                    //     value:1
+                    // },
+                    // {
+                    //     key:'用户确认收货',
+                    //     value:2
+                    // }
+                ],
+                recomand:[
+                    {
+                        key:'否',
+                        value:0
+                    },
+                    {
+                        key:'是',
+                        value:1
+                    }
+                ],
+                sale:[
+                    {
+                        key:'否',
+                        value:0
+                    },
+                    {
+                        key:'是',
+                        value:1
+                    }
+                ]
+            }
+        },
+        mounted(){
+            try{
+
+            }catch(e){
+                
+            }
+            this.fitchData()
+        },
+        methods: {
+            show (index) {
+                this.$Modal.info({
+                    title: '用户信息',
+                    width:700,
+                    content: `Name：${this.dataList[index].name}<br>Age：${this.dataList[index].age}<br>Address：${this.dataList[index].address}`,
+                    render: (h) => {
+                        return h(orderDetail)
+                    }
+                })
+            },
+            remove (index) {
+                
+                this.confirm('确定要删除？','删除用户后无法恢复',()=>{
+                let id = this.dataList[index].id
+                this.loading =true
+                removeData(id).then((res)=>{
+                    if(res.data.code == 0){
+                        console.log(res)
+                        this.loading = false
+                        this.fitchData()
+                        this.$Notice.success({title:'删除成功'});
+                        
+                    }
+                }).catch((res)=>{
+                    console.log(res)
+                })
+                })
+
+            },
+            pageChange(page){
+                this.searchData.page = page
+                this.fitchData()
+            },
+            pageSizeChange(pageSize){
+                this.searchData.pageSize = pageSize;
+                this.fitchData()
+            },
+            fitchData(){
+            let searchData = this.searchData
+            console.log(searchData)
+            this.loading=true
+            fitchDataList(this.searchData).then((res)=>{
+                if(res.data.code ==0){
+                    this.loading=false
+                    console.log(res)
+                    this.totalRow = res.data.result.totalRow
+                    this.dataList = res.data.result.data
+                    this.searchData.userName=undefined,
+                    this.searchData.userPhone=undefined
+                    this.searchData.orderNo=undefined
+                }
+                else{
+                    this.$Loading.error();
+                }
+
+            }).catch((res)=>{
+                this.$Loading.error();
+                console.log(res)
+            })
+            },
+            timeChange(e){
+                this.searchData.dateAdd = e[0];
+                this.searchData.dateUpdate = e[1]
+            },
+            search(){
+                this.fitchData();
+            },
+            confirm (title, content, fn) {
+                this.$Modal.confirm({
+                    title: title,
+                    content: content,
+                    onOk: () => {
+                        fn()
+                    },
+                    onCancel: () => {
+                        this.$Message.info('取消');
+                    }
+                });
+            }
+        }
+    }
+</script>
+<style >
+.input{
+    width:200px !important;
+}
+.input_box{
+    display: flex;
+    flex-wrap:wrap;
+    margin-bottom: 10px
+}
+.input_box>div{
+margin-right: 10px;
+margin-bottom:10px
+}   
+.ytable{
+    margin-top: 20px;
+    margin-bottom: 20px
+}
+.label{
+    padding: 4px 7px;
+    font-size: inherit;
+    font-weight: 400;
+    color: #515a6e;
+    display: flex;
+    align-items: center;
+    background-color: #f8f8f9;
+    border: 1px solid #dcdee2;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+.Pick_box{
+    display: flex;
+    
+}
+.ivu-table-cell{
+    display:flex;
+    justify-content:center;
+}
+.action{
+    display:flex;
+    flex-direction: column;
+}
+.action>button:nth-child(2):hover{
+    color: #47CB89
+}
+.action>button:nth-child(3):hover{
+    color: #FFA51E
+}
+.action>button:last-child:hover{
+    color: #ED4014
+}
+</style>
+

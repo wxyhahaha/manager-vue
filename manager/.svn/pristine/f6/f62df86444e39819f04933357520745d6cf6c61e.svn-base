@@ -1,0 +1,71 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+// import HelloWorld from '@/components/HelloWorld'
+
+const HelloWorld = ()=> import('@/components/HelloWorld')
+const Index = ()=> import('@/pages/index')
+const LayOut = ()=> import('@/components/sideBar/index')
+const User = ()=> import('@/pages/user/index')
+const Address = ()=> import('@/pages/address/index')
+const Goods = ()=> import('@/pages/goods/index')
+const Order = ()=> import('@/pages/order/index')
+const Category = ()=> import('@/pages/category/index')
+
+Vue.use(Router)
+
+export default new Router({
+  routes: [
+    
+    {
+      path:'/',
+      component:Index ,
+    },
+
+      {
+        path:'/user',
+        component:Index ,
+        name:'用户管理',
+        meta:{ title:'用户管理', icon:''},
+        children:[
+          {
+            path:'/user/userList',
+            component:User,
+            name:'用户列表',
+            meta:{ title: '用户列表', icon:''},
+          },
+          {
+            path:'/user/addressList',
+            component:Address,
+            name:'地址列表',
+            meta:{ title: '地址列表', icon:''},
+          }
+        ]
+      },
+      {
+        path:'/shop',
+        component:Index ,
+        name:'商城管理',
+        meta:{ title:'商城管理', icon:''},
+        children:[
+          {
+            path:'/order/orderList',
+            component:Order,
+            name:'订单管理',
+            meta:{ title: '订单管理', icon:''},
+          },
+          {
+            path:'/goods/goodsList',
+            component:Goods,
+            name:'商品管理',
+            meta:{ title: '商品管理', icon:''},
+          },
+          {
+            path:'/category/categoryList',
+            component:Category,
+            name:'商品分类',
+            meta:{ title: '商品分类', icon:''},
+          }
+        ]
+      }
+  ]
+})

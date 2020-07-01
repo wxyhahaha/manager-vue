@@ -1,0 +1,50 @@
+<template>
+    <Menu class="sideBar" 
+     model="vertical"
+      width="200px">
+        <Submenu :name="i" v-for="(route,i) in routes">
+            <template slot="title">
+                <Icon type="ios-analytics" />
+                {{route.name}}
+            </template>
+                <MenuItem :name="i +'-' +a" v-for="(child,a) in route.children" :to="child.path">{{ child.name }} </MenuItem>
+
+        </Submenu>
+    </Menu>
+    
+</template>
+<script>
+import Item from './item.vue'
+    export default {
+        data(){
+            return{
+                routes:[],
+                
+            }
+            
+        },
+        components:{
+            'bar-item':Item
+        },
+        mounted(){
+            console.log(this.$router.options.routes)
+            this.$router.options.routes.forEach((v, i) => {
+                if(i>0){
+                    this.routes.push(v)
+                }
+            });
+
+        }
+    }
+</script>
+<style>
+.sideBar{
+    position: fixed;
+    left: 0;
+    top: 48px;
+    width: 200px;
+    height: 100%;
+}
+</style>
+
+

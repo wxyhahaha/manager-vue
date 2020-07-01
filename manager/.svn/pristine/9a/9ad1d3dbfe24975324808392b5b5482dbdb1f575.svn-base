@@ -1,0 +1,11 @@
+import Cookie from 'js-cookie'
+export function getLoginToken(){
+
+    return Cookie.get('loginToken')
+}
+export function setLoginToken(token){
+    return Cookie.set('loginToken',token)
+}
+export function removeLoginToken(){
+    return Cookie.remove('loginToken')
+}

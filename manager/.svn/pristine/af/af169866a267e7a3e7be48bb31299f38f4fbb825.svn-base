@@ -1,0 +1,17 @@
+import request from '@/utils/request'
+export function fitchDataList(data) {
+  return request({
+    url: 'manager/user/list',
+    method: 'post',
+    data: data
+  })
+}
+
+
+export function removeData(id) {
+  return request({
+    url: 'manager/user/del',
+    method: 'post',
+    data: { id }
+  })
+}

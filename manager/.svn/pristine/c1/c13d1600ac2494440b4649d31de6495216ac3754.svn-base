@@ -1,0 +1,221 @@
+<template>
+    <div>
+        <div class="input_box">
+            <Input v-model="searchData.categoryId" class="input">
+                <span slot="prepend">分类编号</span>
+            </Input>
+            <Input v-model="searchData.catName" class="input">
+                <span slot="prepend">分类名称</span>
+            </Input>
+            <div class="Pick_box">
+            <label for="" class="label">增加时间</label> <DatePicker type="datetimerange" placeholder="Select date and time" style="width: 300px" @on-change="timeChange">
+            </DatePicker>
+            </div>
+
+        </div>
+    <Button type="primary" @click="search" icon="ios-search">查询</Button>
+    <Button type="success" @click="addAddress" icon="ios-add"  >添加</Button>
+    <br>
+   
+    <Table border :columns="columns12" :data="dataList" class="ytable" :loading="loading">
+        <template slot-scope="{ row }" slot="categoryId">
+            <strong>{{ row.categoryId }}</strong>
+        </template>
+        <template slot-scope="{ row }" slot="catImg">
+            <img :src="row.catImg" alt="" style="width:100px;height:100px">
+        </template>
+        <template slot-scope="{ row, index }" slot="action">
+            <Button type="primary" size="small" style="margin-right: 5px" @click="upDateAddress(index)">编辑</Button>
+            <Button type="error" size="small" @click="remove(index)">删除</Button>
+        </template>
+        
+    </Table>
+    <Page :total="totalRow" :page-size="10" @on-page-size-change="pageSizeChange" @on-change="pageChange" show-sizer />
+    </div>
+
+
+
+
+    
+</template>
+<script>
+    export default {
+        data () {
+            return {
+                searchData:{
+                    categoryId:undefined,
+                    catName:undefined,
+                    dateAdd:undefined,
+                    dateUpdate:undefined,
+                    page:1,
+                    pageSize:10
+                },
+                totalRow:undefined,
+                loading:true,
+                columns12: [
+                    {
+                        title: '分类编号',
+                        slot: 'categoryId'
+                    },
+                    {
+                        title: '分类名称',
+                        key: 'catName'
+                    },
+                    {
+                        title: '封面',
+                        slot: 'catImg'
+                    },
+                    {
+                        title: '增加时间',
+                        key: 'dateAdd'
+                    },
+                    {
+                        title: 'Action',
+                        slot: 'action',
+                        width: 150,
+                        align: 'center'
+                    }
+                ],
+                dataList: [ ],
+                addressDefault:[
+                    {
+                        key:'是',
+                        value:0
+                    },
+                    {
+                        key:'否',
+                        value:1
+                    }
+                ]
+            }
+        },
+        mounted(){
+            try{
+
+            }catch(e){
+                
+            }
+            this.fitchData()
+        },
+        methods: {
+            show (index) {
+                this.$Modal.info({
+                    title: '用户信息',
+                    content: `Name：${this.dataList[index].name}<br>Age：${this.dataList[index].age}<br>Address：${this.dataList[index].address}`
+                })
+            },
+            remove (index) {
+                
+                this.confirm('确定要删除？','删除用户后无法恢复',()=>{
+                let id = this.dataList[index].id
+                this.loading =true
+                return this.$axios.post('http://localhost:7001/manager/category/del',{id:id}).then((res)=>{
+                    if(res.data.code == 0){
+                        console.log(res)
+                        this.loading = false
+                        this.fitchData()
+                        this.$Notice.success({title:'删除成功'});
+                        
+                    }
+                }).catch((res)=>{
+                    console.log(res)
+                })
+                })
+
+            },
+            pageChange(page){
+                this.searchData.page = page
+                this.fitchData()
+            },
+            pageSizeChange(pageSize){
+                this.searchData.pageSize = pageSize;
+                this.fitchData()
+            },
+            fitchData(){
+            let searchData = this.searchData
+            console.log(searchData)
+            this.loading=true
+            return this.$axios.post('http://localhost:7001/manager/category/list',searchData).then((res)=>{
+                if(res.data.code ==0){
+                    this.loading=false
+                    console.log(res)
+                    this.totalRow = res.data.result.totalRow
+                    this.dataList = res.data.result.data
+                }
+                else{
+                    this.$Loading.error();
+                }
+
+            }).catch((res)=>{
+                this.$Loading.error();
+                console.log(res)
+            })
+            },
+            timeChange(e){
+                this.searchData.dateAdd = e[0];
+                this.searchData.dateUpdate = e[1]
+            },
+            search(){
+                this.fitchData();
+            },
+            confirm (title, content, fn) {
+                this.$Modal.confirm({
+                    title: title,
+                    content: content,
+                    onOk: () => {
+                        fn()
+                    },
+                    onCancel: () => {
+                        this.$Message.info('取消');
+                    }
+                });
+            },
+            addAddress(){
+                this.$router.push({path:'/category/categoryList/add'})
+            },
+            upDateAddress(index){
+                let id = this.dataList[index].id
+                this.$router.push({path:'/category/categoryList/add',query:{id}})
+            }
+        }
+    }
+</script>
+<style >
+.input{
+    width:200px !important;
+}
+.input_box{
+    display: flex;
+    flex-wrap:wrap;
+    margin-bottom: 10px
+}
+.input_box>div{
+margin-right: 10px;
+margin-bottom:10px
+}   
+.ytable{
+    margin-top: 20px;
+    margin-bottom: 20px
+}
+.label{
+    padding: 4px 7px;
+    font-size: inherit;
+    font-weight: 400;
+    color: #515a6e;
+    display: flex;
+    align-items: center;
+    background-color: #f8f8f9;
+    border: 1px solid #dcdee2;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+.Pick_box{
+    display: flex
+
+}
+.ivu-table-cell{
+    display:flex;
+    justify-content:center;
+}
+</style>
+

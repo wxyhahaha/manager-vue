@@ -1,0 +1,76 @@
+<template>
+    <Layout>
+        <Sider hide-trigger :style="{background: '#fff'}">
+            <Menu  theme="dark" width="auto" :open-names="['1']" class="side_manu"  @on-select="change">
+                <Submenu :name="i" v-for="(route,i) in routes">
+                    <template slot="title">
+                        <Icon type="ios-analytics" />
+                        {{route.meta.title}}
+                    </template>
+                        <MenuItem :name="child.meta.title" v-for="(child,a) in route.children" :to="child.path" v-if="child.hidden==false||child.hidden==undefined">{{ child.meta.title }}</MenuItem>
+                </Submenu>               
+            </Menu>
+        </Sider>
+        <Layout :style="{padding: '0 24px 24px'}">
+            <y-breadcrumb :item="breaditem"></y-breadcrumb>
+            <Content :style="{padding: '24px', background: '#fff'}">
+                <router-view></router-view>
+            </Content>
+        </Layout>
+    </Layout>   
+</template>
+<script>
+import Item from './item.vue'
+import Ybreadcrumb from '@/components/breadcrumb/index'
+    export default {
+        data(){
+            return{
+                routes:[],
+                breaditem:''
+            }
+            
+        },
+        methods:{
+            change(e){
+                this.breaditem = e
+            }
+        },
+        components:{
+            'bar-item':Item,
+            'y-breadcrumb':Ybreadcrumb
+        },
+        mounted(){
+            console.log('sdsadsad',this.$router.options.routes)
+            this.$router.options.routes.forEach((v, i) => {
+                if(i>2){
+                    this.routes.push(v)
+                }
+            });
+        }
+    }
+</script>
+<style>
+.sideBar{
+    position: fixed;
+    left: 0;
+    top: 48px;
+    width: 200px;
+    height: 100%;
+}
+.layout{
+    border: 1px solid #d7dde4;
+    background: #f5f7f9;
+    position: relative;
+    border-radius: 4px;
+    height: 100%;
+    overflow: hidden;
+}
+.layout>div{
+    height: 100%;
+}
+.side_manu{
+    height: 100%;
+}
+</style>
+
+

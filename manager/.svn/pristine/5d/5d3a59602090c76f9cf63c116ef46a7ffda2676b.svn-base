@@ -1,0 +1,55 @@
+<template>
+    <transition-group name="breadcrumb">
+            <Breadcrumb :style="{margin: '24px 0'}" separator="/" :key='5'>
+                <BreadcrumbItem v-for="(item,index) in levelList" :key='index' v-if="item.meta.title">{{item.meta.title}}</BreadcrumbItem>
+       
+            </Breadcrumb>
+    </transition-group>  
+
+</template>
+<script>
+import pathToRegexp from 'path-to-regexp'
+export default {
+  data() {
+    return {
+      levelList: null
+    }
+  },
+  watch: {
+    $route() {
+      this.getBreadcrumb()
+    }
+  },
+  created() {
+    this.getBreadcrumb()
+  },
+  methods: {
+    getBreadcrumb() {
+      let matched = this.$route.matched
+      this.levelList = matched
+      console.log(matched)
+    }
+  }
+}
+</script>
+<style>
+/*fade*/
+    .breadcrumb-enter-active,
+    .breadcrumb-leave-active {
+    transition: all .5s;
+    }
+
+    .breadcrumb-enter,
+    .breadcrumb-leave-active {
+    opacity: 0;
+    transform: translateX(20px);
+    }
+
+    .breadcrumb-move {
+    transition: all .5s;
+    }
+
+    .breadcrumb-leave-active {
+    position: absolute;
+    }
+</style>

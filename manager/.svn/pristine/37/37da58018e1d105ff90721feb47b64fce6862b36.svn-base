@@ -1,0 +1,249 @@
+<template>
+    <div>
+        <div class="input_box">
+            <Input v-model="searchData.userId" class="input">
+                <span slot="prepend">用户编号</span>
+            </Input>
+            <Input v-model="searchData.userName" class="input">
+                <span slot="prepend">用户名</span>
+            </Input>
+            <Input v-model="searchData.addressId" class="input">
+                <span slot="prepend">地址编号</span>
+            </Input>        
+            <div class="Pick_box">
+                <label for="" class="label">是否默认</label>
+                <Select v-model="searchData.isDefault" style="width:100px">
+                        <Option v-for="item in addressDefault" :value="item.value" :key="item.value">{{ item.key }}</Option>
+                </Select>               
+            </div>
+            <Input v-model="searchData.mobilePhone" class="input">
+                <span slot="prepend">手机号码</span>
+            </Input>
+            <div class="Pick_box">
+            <label for="" class="label">增加时间</label> <DatePicker type="datetimerange" placeholder="Select date and time" style="width: 300px" @on-change="timeChange">
+            </DatePicker>
+            </div>
+
+        </div>
+
+    <Button type="primary" @click="search" icon="ios-search">查询</Button>
+    <Button type="success" @click="addAddress" icon="ios-add"  >添加</Button>
+    <br>
+   
+    <Table border :columns="columns12" :data="dataList" class="ytable" :loading="loading">
+        <template slot-scope="{ row }" slot="userId">
+            <strong>{{ row.userId }}</strong>
+        </template>
+        <template slot-scope="{ row }" slot="isDefault" style="displlay:flex">
+            <Icon v-if="row.isDefault == 1" type="ios-checkmark-circle" color="#19BE6B" size="22" />
+            <Icon v-else  type="ios-close-circle" color="#F16A43" size="22" />
+
+        </template>
+        <template slot-scope="{ row, index }" slot="action">
+            <Button type="primary" size="small" style="margin-right: 5px" @click="show(index)">查看</Button>
+            <Button type="error" size="small" @click="remove(index)">删除</Button>
+        </template>
+        
+    </Table>
+    <Page :total="totalRow" :page-size="10" @on-page-size-change="pageSizeChange" @on-change="pageChange" show-sizer />
+    </div>
+
+
+
+
+    
+</template>
+<script>
+import { fitchDataList, removeData } from '@/api/apiAddress.js'
+    export default {
+        data () {
+            return {
+                searchData:{
+                    userId:undefined,
+                    userName:undefined,
+                    addressId:undefined,
+                    isDefault:undefined,
+                    userPhone:undefined,
+                    dateAdd:undefined,
+                    dateUpdate:undefined,
+                    page:1,
+                    pageSize:10
+                },
+                totalRow:undefined,
+                loading:true,
+                columns12: [
+                    {
+                        title: '用户编号',
+                        slot: 'userId'
+                    },
+                    {
+                        title: '用户名',
+                        key: 'userName'
+                    },
+                    {
+                        title: '地址编号',
+                        key: 'addressId'
+                    },
+                    {
+                        title: '是否默认',
+                        slot: 'isDefault'
+                    },
+                    {
+                        title: '手机号码',
+                        key: 'userPhone'
+                    },
+                    
+                    {
+                        title: '详细地址',
+                        key: 'userAddress'
+                    },
+                    {
+                        title: '增加时间',
+                        key: 'dateAdd'
+                    },
+                    {
+                        title: 'Action',
+                        slot: 'action',
+                        width: 150,
+                        align: 'center'
+                    }
+                ],
+                dataList: [ ],
+                addressDefault:[
+                    {
+                        key:'是',
+                        value:1
+                    },
+                    {
+                        key:'否',
+                        value:0
+                    }
+                ]
+            }
+        },
+        mounted(){
+            try{
+
+            }catch(e){
+                
+            }
+            this.fitchData()
+        },
+        methods: {
+            show (index) {
+                this.$Modal.info({
+                    title: '用户信息',
+                    content: `Name：${this.dataList[index].name}<br>Age：${this.dataList[index].age}<br>Address：${this.dataList[index].address}`
+                })
+            },
+            remove (index) {
+                
+                this.confirm('确定要删除？','删除用户后无法恢复',()=>{
+                let id = this.dataList[index].id
+                this.loading =true
+                    removeData(id).then((res)=>{
+                        if(res.data.code == 0){
+                            this.loading = false
+                            this.fitchData()
+                            this.$Message.success('删除成功');
+                            
+                        }
+                    }).catch((res)=>{
+                        console.log(res)
+                    })
+                })
+
+            },
+            pageChange(page){
+                this.searchData.page = page
+                this.fitchData()
+            },
+            pageSizeChange(pageSize){
+                this.searchData.pageSize = pageSize;
+                this.fitchData()
+            },
+            fitchData(){
+            this.loading=true
+            fitchDataList(this.searchData).then((res)=>{
+                if(res.data.code ==0){
+                    this.loading=false
+                    console.log(res)
+                    this.totalRow = res.data.result.totalRow
+                    this.dataList = res.data.result.data
+                }
+                else{
+                    this.$Loading.error();
+                }
+
+            }).catch((res)=>{
+                this.$Loading.error();
+                console.log(res)
+            })
+
+            },
+            timeChange(e){
+                this.searchData.dateAdd = e[0];
+                this.searchData.dateUpdate = e[1]
+            },
+            search(){
+                this.fitchData();
+            },
+            confirm (title, content, fn) {
+                this.$Modal.confirm({
+                    title: title,
+                    content: content,
+                    onOk: () => {
+                        fn()
+                    },
+                    onCancel: () => {
+                        this.$Message.info('取消');
+                    }
+                });
+            },
+            addAddress(){
+                this.$router.push({path:'/user/addressList/add'})
+            }
+        }
+    }
+</script>
+<style >
+
+
+.input{
+    width:200px !important;
+}
+.input_box{
+    display: flex;
+    flex-wrap:wrap;
+    margin-bottom: 10px
+}
+.input_box>div{
+margin-right: 10px;
+margin-bottom:10px
+}   
+.ytable{
+    margin-top: 20px;
+    margin-bottom: 20px
+}
+.label{
+    padding: 4px 7px;
+    font-size: inherit;
+    font-weight: 400;
+    color: #515a6e;
+    display: flex;
+    align-items: center;
+    background-color: #f8f8f9;
+    border: 1px solid #dcdee2;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+.Pick_box{
+    display: flex
+
+}
+.ivu-table-cell{
+    display:flex;
+    justify-content:center;
+}
+</style>
+
